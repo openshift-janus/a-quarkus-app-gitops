@@ -1,0 +1,15 @@
+app:
+  name: a-quarkus-app
+  namespace: a-quarkus-app-dev
+  cluster: .apps.cluster-t2qpr.t2qpr.sandbox1114.opentlc.com
+
+git:
+  branch: main
+  repo: https://github.com/openshift-janus/a-quakus-app
+  org: openshift-janus
+  name: a-quakus-app
+
+image:
+  host: image-registry.openshift-image-registry.svc:5000
+  name: a-quarkus-app-dev/a-quarkus-app
+  tag: latest
