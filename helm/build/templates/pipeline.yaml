@@ -117,22 +117,14 @@ spec:
     - name: IMAGESTREAMTAG
       value: $(params.IMAGESTREAMTAG)
     runAfter:
-    - fetch-repository
+    - package
     taskRef:
       kind: ClusterTask
       name: s2i-java-workshop
     workspaces:
     - name: source
       workspace: workspace
-  - name: deploy
-    params:
-    - name: SCRIPT
-      value: oc rollout status deploy/$(params.APP_NAME)
-    runAfter:
-    - build
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
+
   # Skip Quay publish here
   # - name: skopeo-copy
   #   params:
@@ -168,6 +160,15 @@ spec:
           image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
       - name: image_digest
         value: latest
+  - name: deploy
+    params:
+    - name: SCRIPT
+      value: oc rollout status deploy/$(params.APP_NAME)
+    runAfter:
+    - rox-image-check
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
   - name: git-update-deployment
     params:
     - name: GIT_REPOSITORY
