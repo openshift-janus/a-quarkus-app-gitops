@@ -152,7 +152,7 @@ spec:
         value: >-
           image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
       - name: image_digest
-        value: latest
+        value: $(tasks.bugitild.results.IMAGE_DIGEST)
   - name: deploy
     params:
     - name: SCRIPT
