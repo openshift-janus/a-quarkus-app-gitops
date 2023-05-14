@@ -32,7 +32,7 @@ spec:
     name: VERSION
     type: string
   - default: workshop
-    name: IMAGESTREAM
+    name: IMAGESTREAMgre
     type: string
   - default: latest
     name: IMAGESTREAMTAG
