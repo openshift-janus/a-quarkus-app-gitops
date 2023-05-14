@@ -150,7 +150,7 @@ spec:
         value: roxsecrets
       - name: image
         value: >-
-          default-route-openshift-image-registry.apps.cluster-t2qpr.t2qpr.sandbox1114.opentlc.com/$(params.APP_NAME)-dev/$(params.APP_NAME)
+          image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
       - name: image_digest
         value: '$(tasks.build.results.IMAGE_DIGEST)'
   - name: deploy
