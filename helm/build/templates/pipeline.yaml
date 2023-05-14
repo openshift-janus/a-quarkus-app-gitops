@@ -3,7 +3,7 @@ kind: Pipeline
 metadata:
   labels:
     app.kubernetes.io/instance: '{{ .Values.app.name }}'
-    app.kubernetes.io/name: '{{ .Values.app.name }}''
+    app.kubernetes.io/name: '{{ .Values.app.name }}'
     operator.tekton.dev/operand-name: openshift-pipelines-addons
     pipeline.openshift.io/runtime: java
     pipeline.openshift.io/runtime-version: openjdk-17-ubi8
