@@ -153,10 +153,24 @@ spec:
           image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
       - name: image_digest
         value: '$(tasks.build.results.IMAGE_DIGEST)'
+
+  - name: update-deploy
+    runAfter:
+      - rox-image-check
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
+    params:
+      - name: SCRIPT
+        value: >-
+          oc patch deploy/$(params.APP_NAME)-dev-quarkus-template -p
+          '{"spec":{"template":{"spec":{"containers":[{"name":"quarkus-template","image":"image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)"}]}}}}'
+      - name: VERSION
+        value: latest
   - name: deploy
     params:
     - name: SCRIPT
-      value: oc rollout status deploy/$(params.APP_NAME)
+      value: oc rollout status deploy/$(params.APP_NAME)-dev-quarkus-template
     runAfter:
     - rox-image-check
     taskRef:
