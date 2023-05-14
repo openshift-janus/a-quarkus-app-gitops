@@ -32,7 +32,7 @@ spec:
     name: VERSION
     type: string
   - default: workshop
-    name: IMAGESTREAMgre
+    name: IMAGESTREAM
     type: string
   - default: latest
     name: IMAGESTREAMTAG
@@ -98,7 +98,7 @@ spec:
       name: maven
     workspaces:
       - name: source
-        workspace: workspaces
+        workspace: workspace
       - name: maven-settings
         workspace: maven-settings
   
