@@ -55,6 +55,22 @@ spec:
       workspaces:
         - name: source
           workspace: source-folder
+    - name: rox-image-check
+      runAfter:
+        - build-and-push
+      taskRef:
+        kind: ClusterTask
+        name: rox-image-check
+      params:
+        - name: rox_central_endpoint
+          value: roxsecrets
+        - name: rox_api_token
+          value: roxsecrets
+        - name: image
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app
+        - name: image_digest
+          value: latest
   workspaces:
     - name: source-folder
     - name: maven-settings
