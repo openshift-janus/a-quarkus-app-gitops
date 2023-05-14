@@ -182,7 +182,7 @@ spec:
     - name: KUSTOMIZATION_PATH
       value: environments/dev
     runAfter:
-    - rox-image-check
+    - deploy
     taskRef:
       kind: Task
       name: git-update-deployment
