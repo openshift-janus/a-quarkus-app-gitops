@@ -172,30 +172,30 @@ spec:
     - name: SCRIPT
       value: oc rollout status deploy/$(params.APP_NAME)-dev-quarkus-template
     runAfter:
-    - rox-image-check
+    - update-deploy
     taskRef:
       kind: ClusterTask
       name: openshift-client
-  - name: git-update-deployment
-    params:
-    - name: GIT_REPOSITORY
-      value: $(params.GIT_CONFIG_REPO)
-    - name: CURRENT_IMAGE
-      value: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-prod/$(params.APP_NAME):latest
-    - name: NEW_IMAGE
-      value: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-prod/$(params.APP_NAME)
-    - name: NEW_DIGEST
-      value: $(tasks.build.results.IMAGE_DIGEST)
-    - name: KUSTOMIZATION_PATH
-      value: environments/dev
-    runAfter:
-    - deploy
-    taskRef:
-      kind: Task
-      name: git-update-deployment
-    workspaces:
-    - name: workspace
-      workspace: workspace
+  # - name: git-update-deployment
+  #   params:
+  #   - name: GIT_REPOSITORY
+  #     value: $(params.GIT_CONFIG_REPO)
+  #   - name: CURRENT_IMAGE
+  #     value: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-prod/$(params.APP_NAME):latest
+  #   - name: NEW_IMAGE
+  #     value: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-prod/$(params.APP_NAME)
+  #   - name: NEW_DIGEST
+  #     value: $(tasks.build.results.IMAGE_DIGEST)
+  #   - name: KUSTOMIZATION_PATH
+  #     value: environments/dev
+  #   runAfter:
+  #   - deploy
+  #   taskRef:
+  #     kind: Task
+  #     name: git-update-deployment
+  #   workspaces:
+  #   - name: workspace
+  #     workspace: workspace
   workspaces:
   - name: workspace
   - name: maven-settings
