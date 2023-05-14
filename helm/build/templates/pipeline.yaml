@@ -2,28 +2,25 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   labels:
-    app.kubernetes.io/instance: {{ .Values.app.name }}
-    app.kubernetes.io/name: {{ .Values.app.name }}
+    app.kubernetes.io/instance: '{{ .Values.app.name }}'
+    app.kubernetes.io/name: '{{ .Values.app.name }}''
     operator.tekton.dev/operand-name: openshift-pipelines-addons
     pipeline.openshift.io/runtime: java
     pipeline.openshift.io/runtime-version: openjdk-17-ubi8
     pipeline.openshift.io/type: kubernetes
-  name: {{ .Values.app.name }}-pipelinespec:
+  name: '{{ .Values.app.name }}-pipeline'
+spec:
   params:
-  - default: {{ .Values.app.name }}
+  - default: '{{ .Values.app.name }}'
     name: APP_NAME
     type: string
   - name: source-repo
     description: source repo that contains the application code
     type: string
-    default: {{ .Values.git.repo }}
+    default: '{{ .Values.git.repo }}'
   - name: source-branch
     description: source branch to build from
-    default: {{ .Values.git.branch }}
-    type: string
-  - name: output-image
-    description: reference of the image that will get created
-    default: {{ include "image.url" . }}
+    default: '{{ .Values.git.branch }}'
     type: string
   - default: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
     name: IMAGE_NAME
@@ -95,7 +92,7 @@ metadata:
 
   - name: package
     runAfter:
-      - git-clone
+      - fetch-repository
     taskRef:
       kind: ClusterTask
       name: maven
@@ -157,7 +154,7 @@ metadata:
   #     workspace: workspace
   - name: rox-image-check
     runAfter:
-      - build-and-push
+      - build
     taskRef:
       kind: ClusterTask
       name: rox-image-check
@@ -184,7 +181,7 @@ metadata:
     - name: KUSTOMIZATION_PATH
       value: environments/dev
     runAfter:
-    - rox_image_check
+    - rox-image-check
     taskRef:
       kind: Task
       name: git-update-deployment
