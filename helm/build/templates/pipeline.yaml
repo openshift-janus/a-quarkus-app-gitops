@@ -107,23 +107,13 @@ spec:
   
   - name: build
     params:
-    - name: IMAGE
-      value: $(params.IMAGE_NAME)
-    - name: TLSVERIFY
-      value: "false"
-    - name: PATH_CONTEXT
-      value: '.'
-    - name: VERSION
-      value: openjdk-17-ubi8
-    - name: IMAGESTREAM
-      value: $(params.IMAGESTREAM)
-    - name: IMAGESTREAMTAG
-      value: $(params.IMAGESTREAMTAG)
+      - name: IMAGE
+        value: "$(params.IMAGE_NAME)"
     runAfter:
-    - package
+      - package
     taskRef:
-      kind: ClusterTask
-      name: s2i-java-workshop
+      kind: Task
+      name: kaniko
     workspaces:
     - name: source
       workspace: workspace
