@@ -58,10 +58,8 @@ spec:
         echo $(workspaces.output.path)
         echo $(dirname -- "$(params.file-path)")
         
-        cd a-quarkus-app-gitops
+        cd a-quakus-app-gitops
         
-        ls -al
-
         git config --global user.email "tekton-cd-bot@redhat.com" 
 
         git config --global user.name "tekton-cd-bot"
