@@ -82,4 +82,4 @@ spec:
       workingDir: $(workspaces.output.path)
   workspaces:
     - description: The git repo will be cloned onto the volume backing this workspace
-      name: workspace
+      name: output

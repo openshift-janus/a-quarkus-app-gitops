@@ -225,7 +225,7 @@ spec:
     taskRef:
       name: yq-and-git-push
     workspaces:
-      - name: workspace
+      - name: output
         workspace: workspace
     params:
       - name: file-path
