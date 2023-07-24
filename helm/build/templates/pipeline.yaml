@@ -137,26 +137,27 @@ spec:
   #   workspaces:
   #   - name: images-url
   #     workspace: workspace
-  - name: rox-image-check
-    runAfter:
-      - build
-    taskRef:
-      kind: ClusterTask
-      name: rox-image-check
-    params:
-      - name: rox_central_endpoint
-        value: roxsecrets
-      - name: rox_api_token
-        value: roxsecrets
-      - name: image
-        value: >-
-          image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
-      - name: image_digest
-        value: '$(tasks.build.results.IMAGE_DIGEST)'
+  # - name: rox-image-check
+  #   runAfter:
+  #     - build
+  #   taskRef:
+  #     kind: ClusterTask
+  #     name: rox-image-check
+  #   params:
+  #     - name: rox_central_endpoint
+  #       value: roxsecrets
+  #     - name: rox_api_token
+  #       value: roxsecrets
+  #     - name: image
+  #       value: >-
+  #         image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
+  #     - name: image_digest
+  #       value: '$(tasks.build.results.IMAGE_DIGEST)'
 
   - name: update-deploy
     runAfter:
-      - rox-image-check
+      # - rox-image-check
+      - build
     taskRef:
       kind: ClusterTask
       name: openshift-client
