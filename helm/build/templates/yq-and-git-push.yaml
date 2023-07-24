@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: yq-and-git-push
-  namespace: {{ .Values.nameSpace }}
 spec:
   params:
     - description: Path of values.yaml
