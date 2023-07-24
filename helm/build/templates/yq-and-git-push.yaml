@@ -75,8 +75,11 @@ spec:
         #ls -al 
 
         git show-ref
+        git remote -v
+        cat .git/config
+        cat ~/.git-credentials
         git push -u origin $(params.helm-chart-git-revision)  
       workingDir: $(workspaces.output.path)
   workspaces:
     - description: The git repo will be cloned onto the volume backing this workspace
-      name: output
+      name: workspace
