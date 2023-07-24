@@ -13,8 +13,9 @@ devops:
   branch: main
   repo: https://github.com/openshift-janus/a-quakus-app-gitops
   org: openshift-janus
-  name: a-quarkus-app-gitops
-  filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
+  name: a-quakus-app-gitops
+  #the repo contains a typo quakus instead of quarkus
+  filepath: /workspace/output/a-quakus-app-gitops/helm/app/values-dev.yaml
 
 image:
   host: image-registry.openshift-image-registry.svc:5000
