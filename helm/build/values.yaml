@@ -14,7 +14,7 @@ devops:
   repo: https://github.com/openshift-janus/a-quakus-app-gitops
   org: openshift-janus
   name: a-quarkus-app-gitops
-  filepath: values-dev.yaml
+  filepath: ./helm/app/values-dev.yaml
 
 image:
   host: image-registry.openshift-image-registry.svc:5000
