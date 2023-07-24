@@ -24,9 +24,9 @@ spec:
 
         rm -rf *
 
-        git config --global user.email "jjeong@redhat.com" 
+        git config --global user.email "tekton-cd-bot@redhat.com" 
 
-        git config --global user.name "jjeong"
+        git config --global user.name "tekton-cd-bot"
 
         git clone "$(params.helm-chart-git-url)" --branch "$(params.helm-chart-git-revision)" --single-branch
 
@@ -41,6 +41,7 @@ spec:
         #!/bin/sh    
         echo $(params.file-path)
         echo $(params.image-tag)
+        pwd
 
         yq -i '.image.tag="$(params.image-tag)"' '$(params.file-path)'
       securityContext:
