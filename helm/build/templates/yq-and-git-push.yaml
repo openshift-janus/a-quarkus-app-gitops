@@ -42,6 +42,7 @@ spec:
         echo $(params.file-path)
         echo $(params.image-tag)
         pwd
+        ls -a
 
         yq -i '.image.tag="$(params.image-tag)"' '$(params.file-path)'
       securityContext:
