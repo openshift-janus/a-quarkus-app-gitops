@@ -41,9 +41,16 @@ spec:
   - default: image-registry.openshift-image-registry.svc:5000
     name: QUAY_URL
     type: string
-  - default: https://github.com/openshift-janus/a-quakus-app-gitops
-    name: GIT_CONFIG_REPO
+  - default: '{{ .Values.devops.repo }}'
+    name: DEVOPS_REPO
     type: string
+  - default: '{{ .Values.devops.branch }}'
+    name: DEVOPS_BRANCH
+    type: string
+  - default: '{{ .Values.devops.filepath }}'
+    name: FILEPATH
+    type: string
+
   # params:
   # - default: workshop
   #   name: APP_NAME
@@ -168,15 +175,32 @@ spec:
           '{"spec":{"template":{"spec":{"containers":[{"name":"quarkus-template","image":"image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)"}]}}}}'
       - name: VERSION
         value: latest
-  - name: deploy
-    params:
-    - name: SCRIPT
-      value: oc rollout status deploy/$(params.APP_NAME)-dev-quarkus-template
-    runAfter:
-    - update-deploy
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
+
+  # - name: update-deploy
+  #   runAfter:
+  #     # - rox-image-check
+  #     - build
+  #   taskRef:
+  #     kind: ClusterTask
+  #     name: openshift-client
+  #   params:
+  #     - name: SCRIPT
+  #       value: >-
+  #         oc patch deploy/$(params.APP_NAME)-dev-quarkus-template -p
+  #         '{"spec":{"template":{"spec":{"containers":[{"name":"quarkus-template","image":"image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)"}]}}}}'
+  #     - name: VERSION
+  #       value: latest
+
+  # - name: deploy
+  #   params:
+  #   - name: SCRIPT
+  #     value: oc rollout status deploy/$(params.APP_NAME)-dev-quarkus-template
+  #   runAfter:
+  #   - update-deploy
+  #   taskRef:
+  #     kind: ClusterTask
+  #     name: openshift-client
+
   # - name: git-update-deployment
   #   params:
   #   - name: GIT_REPOSITORY
@@ -197,6 +221,23 @@ spec:
   #   workspaces:
   #   - name: workspace
   #     workspace: workspace
+  - name: yq-and-git-push
+    taskRef:
+      name: yq-and-git-push
+    workspaces:
+      - name: output
+        workspace: workspace
+    params:
+      - name: file-path
+        value: $(params.FILEPATH)
+      - name: image-tag
+        value: $(tasks.build.results.IMAGE_DIGEST)
+      - name: helm-chart-git-url
+        value: $(params.DEVOPS_REPO)  
+      - name: helm-chart-git-revision
+        value: $(params.DEVOPS_BRANCH)
+    runAfter:
+    - build
   workspaces:
   - name: workspace
   - name: maven-settings

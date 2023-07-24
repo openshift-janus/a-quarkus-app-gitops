@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: a-quarkus-app-dev
+  name: a-quarkus-app-test
   namespace: janus-argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io  

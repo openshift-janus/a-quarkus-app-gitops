@@ -7,7 +7,14 @@ git:
   branch: main
   repo: https://github.com/openshift-janus/a-quakus-app
   org: openshift-janus
-  name: a-quakus-app
+  name: a-quarkus-app
+
+devops:
+  branch: main
+  repo: https://github.com/openshift-janus/a-quakus-app-gitops
+  org: openshift-janus
+  name: a-quarkus-app-gitops
+  filepath: values-dev.yaml
 
 image:
   host: image-registry.openshift-image-registry.svc:5000
