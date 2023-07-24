@@ -48,7 +48,7 @@ service:
 
 route: 
   # host: 
-  # path: /
+  path: /hello
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
