@@ -57,20 +57,20 @@ spec:
         echo $(workspaces.output.path)
         echo $(dirname -- "$(params.file-path)")
         
-        cd HelmRepo
+        cd a-quarkus-app-gitops
         
         ls -al
 
-        git config --global user.email "jjeong@redhat.com" 
+        git config --global user.email "tekton-cd-bot@redhat.com" 
 
-        git config --global user.name "jjeong"
+        git config --global user.name "tekton-cd-bot"
 
         #git init
         #git remote add origin "$(params.helm-chart-git-url)"
 
         git add .
 
-        git commit -m "update values.yaml"
+        git commit -m "update values-dev.yaml"
 
         #pwd 
         #ls -al 
