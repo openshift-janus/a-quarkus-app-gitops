@@ -151,7 +151,7 @@ spec:
   #     - name: image_digest
   #       value: '$(tasks.build.results.IMAGE_DIGEST)'
 
-  - name: yq-and-git-push
+  - name: update-dev-gitops
     taskRef:
       name: yq-and-git-push
     workspaces:
