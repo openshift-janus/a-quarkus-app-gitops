@@ -38,7 +38,7 @@ spec:
     name: IMAGESTREAMTAG
     type: string
   # I didn't install Quay , so I used internal registry instead
-  - default: image-registry.openshift-image-registry.svc:5000
+  - default: quay.io/janus_demo
     name: QUAY_URL
     type: string
   - default: '{{ .Values.devops.repo }}'
@@ -125,66 +125,66 @@ spec:
     - name: source
       workspace: workspace
 
-  - name: publish-test-env
-    runAfter:
-      - build
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
-    params:
-      - name: SCRIPT
-        value: >-
-          oc tag $(params.QUAY_URL)/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST) $(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-      - name: VERSION
-        value: latest
-  - name: publish-prod-env
-    runAfter:
-      - publish-test-env
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
-    params:
-      - name: SCRIPT
-        value: >-
-          oc tag $(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST) $(params.QUAY_URL)/$(params.APP_NAME)-prod/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-      - name: VERSION
-        value: latest
-  # - name: publish-test
-  #   params:
-  #   - name: srcImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-  #   - name: destImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-  #   - name: srcTLSverify
-  #     value: "false"
-  #   - name: destTLSverify
-  #     value: "false"
+  # - name: publish-test-env
   #   runAfter:
-  #   - build
+  #     - build
   #   taskRef:
   #     kind: ClusterTask
-  #     name: skopeo-copy
-  #   workspaces:
-  #   - name: images-url
-  #     workspace: workspace
-  # - name: publish-prod
+  #     name: openshift-client
   #   params:
-  #   - name: srcImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-  #   - name: destImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-  #   - name: srcTLSverify
-  #     value: "false"
-  #   - name: destTLSverify
-  #     value: "false"
+  #     - name: SCRIPT
+  #       value: >-
+  #         oc tag $(params.QUAY_URL)/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST) $(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+  #     - name: VERSION
+  #       value: latest
+  # - name: publish-prod-env
   #   runAfter:
-  #   - build
+  #     - publish-test-env
   #   taskRef:
   #     kind: ClusterTask
-  #     name: skopeo-copy
-  #   workspaces:
-  #   - name: images-url
-  #     workspace: workspace
+  #     name: openshift-client
+  #   params:
+  #     - name: SCRIPT
+  #       value: >-
+  #         oc tag $(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST) $(params.QUAY_URL)/$(params.APP_NAME)-prod/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+  #     - name: VERSION
+  #       value: latest
+  - name: publish-test
+    params:
+    - name: srcImageURL
+      value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+    - name: destImageURL
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test@$(tasks.build.results.IMAGE_DIGEST)
+    - name: srcTLSverify
+      value: "false"
+    - name: destTLSverify
+      value: "false"
+    runAfter:
+    - build
+    taskRef:
+      kind: ClusterTask
+      name: skopeo-copy
+    # workspaces:
+    # - name: images-url
+    #   workspace: workspace
+  - name: publish-prod
+    params:
+    - name: srcImageURL
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test@$(tasks.build.results.IMAGE_DIGEST)
+    - name: destImageURL
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod@$(tasks.build.results.IMAGE_DIGEST)
+    - name: srcTLSverify
+      value: "false"
+    - name: destTLSverify
+      value: "false"
+    runAfter:
+    - publish-test
+    taskRef:
+      kind: ClusterTask
+      name: skopeo-copy
+    # workspaces:
+    # - name: images-url
+    #   workspace: workspace
   # - name: rox-image-check
   #   runAfter:
   #     - build
