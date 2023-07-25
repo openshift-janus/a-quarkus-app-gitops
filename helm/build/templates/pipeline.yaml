@@ -138,12 +138,12 @@ spec:
       value: "false"
     runAfter:
     - build
-  #   taskRef:
-  #     kind: ClusterTask
-  #     name: skopeo-copy
-  #   workspaces:
-  #   - name: images-url
-  #     workspace: workspace
+    taskRef:
+      kind: ClusterTask
+      name: skopeo-copy
+    workspaces:
+    - name: images-url
+      workspace: workspace
   # - name: rox-image-check
   #   runAfter:
   #     - build
