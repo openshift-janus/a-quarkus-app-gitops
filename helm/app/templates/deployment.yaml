@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "quarkus-template.fullname" . }}
+  annotations:
+    latest_image_version: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
   labels:
     {{- include "backstage.labels" . | nindent 4 }}
     {{- include "quarkus-template.labels" . | nindent 4 }}
