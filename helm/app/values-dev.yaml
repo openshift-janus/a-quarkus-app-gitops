@@ -12,7 +12,7 @@ image:
   repository: image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: sha256:a4b7ec0ccb06677da219c5e3cbc3ae4d28c6ef077a4ebb396530fdaf68f444d8
+  tag: sha256:5727e614ad94539fe4b924fab63dc31671b25aba5feefe0c6c603efa6d618187
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
