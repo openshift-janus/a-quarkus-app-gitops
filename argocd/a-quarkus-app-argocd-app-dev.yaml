@@ -24,7 +24,7 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
-    - RespectIgnoreDifferences=true
+    # - RespectIgnoreDifferences=true
     - ApplyOutOfSyncOnly=true    
     retry:
       backoff:
