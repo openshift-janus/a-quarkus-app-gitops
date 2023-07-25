@@ -16,8 +16,11 @@ devops:
   name: a-quakus-app-gitops
   #the repo contains a typo quakus instead of quarkus
   filepath: /workspace/output/a-quakus-app-gitops/helm/app/values-dev.yaml
+  #For demo purpose only, release tag should be generated automatically
+  release_tag: v1.0.0-CR2
 
 image:
   host: image-registry.openshift-image-registry.svc:5000
   name: a-quarkus-app-dev/a-quarkus-app
   tag: latest
+

@@ -50,6 +50,9 @@ spec:
   - default: '{{ .Values.devops.filepath }}'
     name: FILEPATH
     type: string
+  - default: '{{ .Values.devops.release_tag }}'
+    name: RELEASE_TAG
+    type: string
 
   # params:
   # - default: workshop
@@ -154,7 +157,7 @@ spec:
     - name: srcImageURL
       value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
     - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:v1.0.0-CR1
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
     - name: srcTLSverify
       value: "false"
     - name: destTLSverify
@@ -170,9 +173,9 @@ spec:
   - name: publish-prod
     params:
     - name: srcImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:v1.0.0-CR1
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
     - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:v1.0.0-CR1
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:$(params.RELEASE_TAG)
     - name: srcTLSverify
       value: "false"
     - name: destTLSverify
