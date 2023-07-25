@@ -14,7 +14,7 @@ image:
   repository: quay.io/janus_demo/a-quarkus-app-test
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: sha256:23ea0bf58a943efdedac158bdb7fa08ec4adac2f0e95ce98e9ef8148108d22ba
+  tag: v1.0.0-CR1
 
 imagePullSecrets: []
 nameOverride: ""
