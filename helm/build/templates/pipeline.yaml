@@ -126,18 +126,18 @@ spec:
       workspace: workspace
 
   # Skip Quay publish here
-  # - name: skopeo-copy
-  #   params:
-  #   - name: srcImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-int/$(params.APP_NAME):latest
-  #   - name: destImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod/$(params.APP_NAME):latest
-  #   - name: srcTLSverify
-  #     value: "false"
-  #   - name: destTLSverify
-  #     value: "false"
-  #   runAfter:
-  #   - build
+  - name: skopeo-copy
+    params:
+    - name: srcImageURL
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-dev/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+    - name: destImageURL
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test/$(params.APP_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+    - name: srcTLSverify
+      value: "false"
+    - name: destTLSverify
+      value: "false"
+    runAfter:
+    - build
   #   taskRef:
   #     kind: ClusterTask
   #     name: skopeo-copy
