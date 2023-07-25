@@ -154,7 +154,7 @@ spec:
     - name: srcImageURL
       value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
     - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test@$(tasks.build.results.IMAGE_DIGEST)
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:v1.0.0-CR1
     - name: srcTLSverify
       value: "false"
     - name: destTLSverify
@@ -170,9 +170,9 @@ spec:
   - name: publish-prod
     params:
     - name: srcImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test@$(tasks.build.results.IMAGE_DIGEST)
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:v1.0.0-CR1
     - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod@$(tasks.build.results.IMAGE_DIGEST)
+      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:v1.0.0-CR1
     - name: srcTLSverify
       value: "false"
     - name: destTLSverify

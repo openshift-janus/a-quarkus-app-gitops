@@ -11,7 +11,7 @@ namespace:
 replicaCount: 1
 
 image:
-  repository: image-registry.openshift-image-registry.svc:5000/a-quarkus-app-prod/a-quarkus-app
+  repository: quay.io/janus_demo/a-quarkus-app-prod
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
