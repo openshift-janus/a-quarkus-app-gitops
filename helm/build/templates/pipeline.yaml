@@ -173,3 +173,4 @@ spec:
   workspaces:
   - name: workspace
   - name: maven-settings
+  - name: gitcredential
