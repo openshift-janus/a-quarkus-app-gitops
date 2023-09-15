@@ -41,3 +41,6 @@ spec:
                     storage: 1Gi
           - emptyDir: {}
             name: maven-settings
+          - name: gitcredential
+            secret:
+              secretName: '{{ .Values.app.name }}-github-pat'

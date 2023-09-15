@@ -69,6 +69,8 @@ spec:
     workspaces:
     - name: output
       workspace: workspace
+    - name: basic-auth
+      workspace: gitcredential
 
   - name: package
     params:
