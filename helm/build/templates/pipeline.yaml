@@ -53,6 +53,12 @@ spec:
   - default: '{{ .Values.devops.release_tag }}'
     name: RELEASE_TAG
     type: string
+  - name: SONARQUBE_HOST_URL
+    type: string
+  - name: SONARQUBE_PROJECT_KEY
+    type: string
+  - name: SONARQUBE_PROJECT_SECRET
+    type: string
 
   tasks:
   - name: fetch-repository
@@ -71,6 +77,23 @@ spec:
       workspace: workspace
     - name: basic-auth
       workspace: gitcredential
+  
+  - name: scan-source
+    params:
+      - name: sonarqubeHostUrl
+        value: $(params.SONARQUBE_HOST_URL)
+      - name: sonarqubeProjectKey
+        value: $(params.SONARQUBE_PROJECT_KEY)
+      - name: sonarqubeProjectSecret
+        value: $(params.SONARQUBE_PROJECT_SECRET)
+    runAfter:
+      - fetch-source
+    taskRef:
+      kind: Task
+      name: scan-code
+    workspaces:
+      - name: repository
+        workspace: shared-data
 
   - name: package
     params:
