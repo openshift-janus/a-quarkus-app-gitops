@@ -12,6 +12,12 @@ spec:
     repoURL: https://github.com/openshift-janus/a-quarkus-app-gitops
     targetRevision: HEAD
     path: ./helm/build
+    helm:
+      parameters:
+        - name: dep.nexusHostUrl
+          value: "{{ .Values.dep.nexusHostUrl}}"
+        - name: dep.sonarHostUrl
+          value: "{{ .Values.dep.sonarHostUrl}}"
   destination:
     server: https://kubernetes.default.svc
     namespace: a-quarkus-app-dev
