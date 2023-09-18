@@ -24,3 +24,8 @@ image:
   name: a-quarkus-app-dev/a-quarkus-app
   tag: latest
 
+dep:
+  sonarHostUrl: ""
+  nexusHostUrl: ""
+  rhacsHostUrl: ""
+

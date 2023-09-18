@@ -55,14 +55,14 @@ spec:
     type: string
   - name: SONARQUBE_HOST_URL
     type: string
-    default: '{{ .Values.sonarHostUrl}}'
+    default: '{{ .Values.dep.sonarHostUrl}}'
   - name: SONARQUBE_PROJECT_KEY
     type: string
   - name: SONARQUBE_PROJECT_SECRET
     type: string
   - name: MAVEN_MIRROR_URL
     type: string
-    default: '{{ .Values.nexusHostUrl }}/repository/maven-public/'
+    default: '{{ .Values.dep.nexusHostUrl }}/repository/maven-public/'
 
   tasks:
   - name: fetch-source
