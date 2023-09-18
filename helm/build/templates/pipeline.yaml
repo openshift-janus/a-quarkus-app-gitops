@@ -75,7 +75,7 @@ spec:
   - name: package
     params:
       - name: MAVEN_MIRROR_URL
-        value: 'http://nexus-cache-repo-sonatype-nexus-service.openshift-devspaces:8081/repository/maven-public/'
+        value: 'http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/'
     runAfter:
       - fetch-repository
     taskRef:
