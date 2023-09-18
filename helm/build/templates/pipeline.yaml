@@ -55,10 +55,14 @@ spec:
     type: string
   - name: SONARQUBE_HOST_URL
     type: string
+    default: '{{ .Values.sonarHostUrl}}'
   - name: SONARQUBE_PROJECT_KEY
     type: string
   - name: SONARQUBE_PROJECT_SECRET
     type: string
+  - name: MAVEN_MIRROR_URL
+    type: string
+    default: '{{ .Values.nexusHostUrl }}/repository/maven-public/'
 
   tasks:
   - name: fetch-source
@@ -110,9 +114,10 @@ spec:
   - name: package
     params:
       - name: MAVEN_MIRROR_URL
-        value: 'http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/'
+        value: ${params.MAVEN_MIRROR_URL}
     runAfter:
-      - fetch-source
+      - scan-source
+      - verify-source
     taskRef:
       kind: ClusterTask
       name: maven

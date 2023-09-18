@@ -5,17 +5,17 @@ app:
 
 git:
   branch: main
-  repo: https://github.com/openshift-janus/a-quakus-app
+  repo: https://github.com/openshift-janus/a-quarkus-app
   org: openshift-janus
   name: a-quarkus-app
 
 devops:
   branch: main
-  repo: https://github.com/openshift-janus/a-quakus-app-gitops
+  repo: https://github.com/openshift-janus/a-quarkus-app-gitops
   org: openshift-janus
-  name: a-quakus-app-gitops
-  #the repo contains a typo quakus instead of quarkus
-  filepath: /workspace/output/a-quakus-app-gitops/helm/app/values-dev.yaml
+  name: a-quarkus-app-gitops
+  #the repo contains a typo quarkus instead of quarkus
+  filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
   #For demo purpose only, release tag should be generated automatically
   release_tag: v1.0.0-CR3
 

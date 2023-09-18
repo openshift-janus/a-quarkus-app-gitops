@@ -9,7 +9,7 @@ metadata:
 spec:
   project: janus
   source:
-    repoURL: https://github.com/openshift-janus/a-quakus-app-gitops
+    repoURL: https://github.com/openshift-janus/a-quarkus-app-gitops
     targetRevision: HEAD
     path: ./helm/app
     helm:
