@@ -61,7 +61,7 @@ spec:
     type: string
 
   tasks:
-  - name: fetch-repository
+  - name: fetch-source
     params:
     - name: url
       value: $(params.source-repo)
@@ -93,14 +93,26 @@ spec:
       name: scan-code
     workspaces:
       - name: repository
-        workspace: shared-data
+        workspace: workspace
+
+  - name: verify-source
+    runAfter:
+    - fetch-source
+    taskRef:
+      kind: Task
+      name: verify-source-code
+    workspaces:
+    - name: repository
+      workspace: workspace
+    # - name: secrets
+    #   workspace: secrets
 
   - name: package
     params:
       - name: MAVEN_MIRROR_URL
         value: 'http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/'
     runAfter:
-      - fetch-repository
+      - fetch-source
     taskRef:
       kind: ClusterTask
       name: maven
@@ -197,3 +209,4 @@ spec:
   - name: workspace
   - name: maven-settings
   - name: gitcredential
+  - name: secrets
