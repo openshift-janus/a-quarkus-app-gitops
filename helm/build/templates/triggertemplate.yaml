@@ -31,7 +31,7 @@ spec:
           - name: SONARQUBE_PROJECT_KEY
             value: a-quarkus-app
           - name: SONARQUBE_PROJECT_SECRET
-            value:sonarqube-secret
+            value: sonarqube-secret
         pipelineRef:
           name: '{{ .Values.app.name }}-pipeline'
         serviceAccountName: pipeline
