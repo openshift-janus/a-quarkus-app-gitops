@@ -214,4 +214,4 @@ spec:
   - name: workspace
   - name: maven-settings
   - name: gitcredential
-  - name: secrets
+  # - name: secrets
