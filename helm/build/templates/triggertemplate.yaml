@@ -28,8 +28,8 @@ spec:
             value: $(tt.params.git-revision)
           - name: output-image
             value: $(tt.params.output-image)
-          - name: SONARQUBE_HOST_URL
-            value: $(tt.params.sonarqubeHostUrl)
+          # - name: SONARQUBE_HOST_URL
+          #   value: $(tt.params.sonarqubeHostUrl)
           - name: SONARQUBE_PROJECT_KEY
             value: a-quarkus-app
           - name: SONARQUBE_PROJECT_SECRET
