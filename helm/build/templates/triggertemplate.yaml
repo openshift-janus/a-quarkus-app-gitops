@@ -52,3 +52,6 @@ spec:
           - name: gitcredential
             secret:
               secretName: '{{ .Values.app.name }}-github-pat'
+          - name: secrets
+            secret:
+              secretName: gpg-public-key

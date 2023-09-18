@@ -91,7 +91,7 @@ spec:
       - name: sonarqubeProjectSecret
         value: $(params.SONARQUBE_PROJECT_SECRET)
     runAfter:
-      - fetch-source
+      - package
     taskRef:
       kind: Task
       name: scan-code
@@ -108,15 +108,14 @@ spec:
     workspaces:
     - name: repository
       workspace: workspace
-    # - name: secrets
-    #   workspace: secrets
+    - name: secrets
+      workspace: secrets
 
   - name: package
     params:
       - name: MAVEN_MIRROR_URL
         value: ${params.MAVEN_MIRROR_URL}
     runAfter:
-      - scan-source
       - verify-source
     taskRef:
       kind: ClusterTask
@@ -214,4 +213,4 @@ spec:
   - name: workspace
   - name: maven-settings
   - name: gitcredential
-  # - name: secrets
+  - name: secrets
