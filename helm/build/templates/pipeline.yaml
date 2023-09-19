@@ -82,6 +82,39 @@ spec:
     - name: basic-auth
       workspace: gitcredential
   
+  - name: verify-source
+    runAfter:
+    - fetch-source
+    taskRef:
+      kind: Task
+      name: verify-source-code
+    workspaces:
+    - name: repository
+      workspace: workspace
+    - name: secrets
+      workspace: secrets
+
+  - name: package
+    params:
+      - name: MAVEN_IMAGE
+        value: "{{ .Value.dep.mavenImage }}"
+      - name: MAVEN_MIRROR_URL
+        value: $(params.MAVEN_MIRROR_URL)
+      - name: GOAL
+        value: "package"
+    runAfter:
+      - verify-source
+    taskRef:
+      kind: Task
+      name: maven
+    workspaces:
+      - name: source
+        workspace: workspace
+      - name: maven-settings
+        workspace: maven-settings
+      - name: maven-local-repo
+        workspace: maven-local-repo
+  
   - name: scan-source
     params:
       - name: sonarqubeHostUrl
@@ -99,37 +132,6 @@ spec:
       - name: repository
         workspace: workspace
 
-  - name: verify-source
-    runAfter:
-    - fetch-source
-    taskRef:
-      kind: Task
-      name: verify-source-code
-    workspaces:
-    - name: repository
-      workspace: workspace
-    - name: secrets
-      workspace: secrets
-
-  - name: package
-    params:
-      - name: MAVEN_MIRROR_URL
-        value: $(params.MAVEN_MIRROR_URL)
-      - name: GOAL
-        value: "-X package"
-    runAfter:
-      - verify-source
-    taskRef:
-      kind: ClusterTask
-      name: maven
-    workspaces:
-      - name: source
-        workspace: workspace
-      - name: maven-settings
-        workspace: maven-settings
-      - name: m2repo
-        workspace: m2repo
-  
   - name: build
     params:
       - name: IMAGE
@@ -216,7 +218,6 @@ spec:
   workspaces:
   - name: workspace
   - name: maven-settings
-  - name: m2repo
-      mountPath: /tekton/home/.m2/repository
+  - name: maven-local-repo
   - name: gitcredential
   - name: secrets
