@@ -77,37 +77,10 @@ spec:
       kind: ClusterTask
       name: git-clone
     workspaces:
-    - name: source
+    - name: output
       workspace: workspace
     - name: basic-auth
       workspace: gitcredential
-  
-  - name: verify-source
-    runAfter:
-    - fetch-source
-    taskRef:
-      kind: Task
-      name: verify-source-code
-    workspaces:
-    - name: source
-      workspace: workspace
-    - name: secrets
-      workspace: secrets
-
-  - name: package
-    params:
-      - name: MAVEN_MIRROR_URL
-        value: $(params.MAVEN_MIRROR_URL)
-    runAfter:
-      - verify-source
-    taskRef:
-      kind: ClusterTask
-      name: maven
-    workspaces:
-      - name: source
-        workspace: workspace
-      - name: maven-settings
-        workspace: maven-settings
   
   - name: scan-source
     params:
@@ -123,9 +96,36 @@ spec:
       kind: Task
       name: scan-code
     workspaces:
-      - name: source
+      - name: repository
         workspace: workspace
 
+  - name: verify-source
+    runAfter:
+    - fetch-source
+    taskRef:
+      kind: Task
+      name: verify-source-code
+    workspaces:
+    - name: repository
+      workspace: workspace
+    - name: secrets
+      workspace: secrets
+
+  - name: package
+    params:
+      - name: MAVEN_MIRROR_URL
+        value: ${params.MAVEN_MIRROR_URL}
+    runAfter:
+      - verify-source
+    taskRef:
+      kind: ClusterTask
+      name: maven
+    workspaces:
+      - name: source
+        workspace: workspace
+      - name: maven-settings
+        workspace: maven-settings
+  
   - name: build
     params:
       - name: IMAGE
@@ -196,7 +196,7 @@ spec:
     taskRef:
       name: yq-and-git-push
     workspaces:
-      - name: source
+      - name: output
         workspace: workspace
     params:
       - name: file-path

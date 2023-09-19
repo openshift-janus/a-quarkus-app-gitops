@@ -33,4 +33,4 @@ spec:
       sonar-scanner -X -Dsonar.projectKey=$(params.sonarqubeProjectKey) -Dsonar.sources=./ -Dsonar.host.url=$(params.sonarqubeHostUrl) -Dsonar.login=$SONAR_TOKEN_WEB_UI
     workingDir: /workspace/repository
   workspaces:
-  - name: source
+  - name: repository

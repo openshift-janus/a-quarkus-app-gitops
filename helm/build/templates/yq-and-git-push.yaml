@@ -33,7 +33,7 @@ spec:
         #git remote -v
 
         #git config --list   
-      workingDir: $(workspaces.source.path)
+      workingDir: $(workspaces.output.path)
     - image: mikefarah/yq
       name: replace-image-tag
       resources: {}
@@ -47,7 +47,7 @@ spec:
         yq -i '.image.tag="$(params.image-tag)"' '$(params.file-path)'
       securityContext:
         privileged: true
-      workingDir: $(workspaces.source.path)
+      workingDir: $(workspaces.output.path)
     - image: 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8:v1.6.2'
       name: git-push
       resources: {}
@@ -55,7 +55,7 @@ spec:
         #!/bin/sh 
         echo $(params.helm-chart-git-url)
         echo $(params.helm-chart-git-revision) 
-        echo $(workspaces.source.path)
+        echo $(workspaces.output.path)
         echo $(dirname -- "$(params.file-path)")
         
         cd a-quarkus-app-gitops
@@ -79,7 +79,7 @@ spec:
         # cat .git/config
         # cat ~/.git-credentials
         git push -u origin $(params.helm-chart-git-revision)  
-      workingDir: $(workspaces.source.path)
+      workingDir: $(workspaces.output.path)
   workspaces:
     - description: The git repo will be cloned onto the volume backing this workspace
-      name: source
+      name: output
