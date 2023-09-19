@@ -9,9 +9,9 @@ spec:
     name: git-verify
     script: |
       set -x
-      pwd
-      ls /
-      tree /workspace
+      # pwd
+      # ls /
+      # tree /workspace
       apk add gpg-agent
       gpg --import /workspace/secrets/public.key
       git config --global --add safe.directory /workspace/repository
