@@ -28,5 +28,5 @@ dep:
   sonarHostUrl: ""
   nexusHostUrl: ""
   rhacsHostUrl: ""
-  mavenImage: image-registry.openshift-image.registry.svc:5000/ubi8-openjdk-17:1.2
+  mavenImage: image-registry.openshift-image.registry.svc:5000/openshift/ubi8-openjdk-17:1.2
 
