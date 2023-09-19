@@ -43,7 +43,7 @@ spec:
             persistentVolumeClaim:
               claimName: a-quarkus-app-build-pvc
           - name: maven-settings
-            emptyDir:{}
+            emptyDir: {}
           - name: m2repo
             persistentVolumeClaim:
               claimName: m2repo-pvc
