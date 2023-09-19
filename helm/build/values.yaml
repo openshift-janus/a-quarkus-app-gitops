@@ -15,7 +15,7 @@ devops:
   org: openshift-janus
   name: a-quarkus-app-gitops
   #the repo contains a typo quarkus instead of quarkus
-  filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
+  filepath: /workspace/source/a-quarkus-app-gitops/helm/app/values-dev.yaml
   #For demo purpose only, release tag should be generated automatically
   release_tag: v1.0.0-CR3
 

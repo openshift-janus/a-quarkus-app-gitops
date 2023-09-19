@@ -15,5 +15,5 @@ spec:
       git verify-commit HEAD || (echo "Unable to verify commit at HEAD!" && exit 1)
     workingDir: /workspace/repository
   workspaces:
-  - name: repository
+  - name: source
   - name: secrets
