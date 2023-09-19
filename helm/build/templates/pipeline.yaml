@@ -127,6 +127,9 @@ spec:
         workspace: workspace
       - name: maven-settings
         workspace: maven-settings
+      - name: m2repo
+        workspace: m2repo
+        mountPath: /tekton/home/.m2/repository
   
   - name: build
     params:
@@ -214,5 +217,6 @@ spec:
   workspaces:
   - name: workspace
   - name: maven-settings
+  - name: m2repo
   - name: gitcredential
   - name: secrets
