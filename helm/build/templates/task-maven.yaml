@@ -148,7 +148,6 @@ spec:
       workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
       command: ["/usr/bin/mvn"]
       args:
-        - -X
         - -s
         - $(workspaces.maven-settings.path)/settings.xml
         - "$(params.GOALS)"
