@@ -40,22 +40,30 @@ spec:
         timeout: 1h0m0s
         workspaces:
           - name: workspace
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 1Gi
+            persistentVolumeClaim:
+              claimName: a-quarkus-app-build-pvc
+            subPath: /workspace
           - name: maven-settings
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 2Gi
-            # emptyDir: {}
+            persistentVolumeClaim:
+              claimName: a-quarkus-app-build-pvc
+            subPath: /.m2/
+          # - name: workspace
+          #   volumeClaimTemplate:
+          #     spec:
+          #       accessModes:
+          #         - ReadWriteOnce
+          #       resources:
+          #         requests:
+          #           storage: 1Gi
+          # - name: maven-settings
+          #   volumeClaimTemplate:
+          #     spec:
+          #       accessModes:
+          #         - ReadWriteOnce
+          #       resources:
+          #         requests:
+          #           storage: 2Gi
+          #   # emptyDir: {}
           - name: gitcredential
             secret:
               secretName: '{{ .Values.app.name }}-github-pat'
