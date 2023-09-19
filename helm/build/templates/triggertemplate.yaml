@@ -42,11 +42,10 @@ spec:
           - name: workspace
             persistentVolumeClaim:
               claimName: a-quarkus-app-build-pvc
-            subPath: /workspace
           - name: maven-settings
             persistentVolumeClaim:
               claimName: a-quarkus-app-build-pvc
-            subPath: /.m2/
+            subPath: .m2
           # - name: workspace
           #   volumeClaimTemplate:
           #     spec:
