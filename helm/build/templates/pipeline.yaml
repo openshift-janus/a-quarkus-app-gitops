@@ -115,6 +115,8 @@ spec:
     params:
       - name: MAVEN_MIRROR_URL
         value: $(params.MAVEN_MIRROR_URL)
+      - name: GOAL
+        value: "-X package"
     runAfter:
       - verify-source
     taskRef:
