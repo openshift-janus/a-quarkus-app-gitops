@@ -25,40 +25,39 @@ spec:
     #   description: target image repository name
   - name: source-repo
     description: source repo that contains the application code
-    type: string
     default: '{{ .Values.git.repo }}'
   - name: git-revision
     description: source branch to build from
-    type: string
+    
 
   - name: MAVEN_MIRROR_URL
-    type: string
+    
 
   - name: SONARQUBE_HOST_URL
-    type: string
+    
   - name: SONARQUBE_PROJECT_KEY
-    type: string
+    
   - name: SONARQUBE_PROJECT_SECRET
-    type: string
+    
 
   - name: TLSVERIFY
-    type: string
+    
   # - name: BUILD_EXTRA_ARGS
-  #   type: string
+  #   
   - name: GIT_REVISION
-    type: string
+    
   - name: GIT_REF
-    type: string
+    
   - name: COMMIT_DATE
-    type: string
+    
   - name: COMMIT_AUTHOR
-    type: string
+    
   - name: COMMIT_MESSAGE
-    type: string
+    
   - name: IMAGE_REPO
-    type: string
+    
   - name: IMAGE_TAG
-    type: string
+    
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
