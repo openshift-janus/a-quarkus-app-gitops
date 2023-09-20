@@ -39,7 +39,7 @@ spec:
           - name: IMAGE_REPO
             value: $(tt.params.imageRepo)
           - name: IMAGE_TAG
-            value: $(tt.params.io.openshift.build.commit.ref)-$(tt.params.io.openshift.build.commit.id)
+            value: $(tt.params.git-ref)-$(tt.params.git-revision)
         pipelineRef:
           name: '{{ .Values.app.name }}-pipeline'
         serviceAccountName: pipeline
