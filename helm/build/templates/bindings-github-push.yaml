@@ -10,7 +10,7 @@ spec:
   - name: git-repo-name
     value: $(body.repository.full_name)
   - name: git-ref
-    value: $(extensions.ref)
+    value: $(body.ref)
   - name: git-revision
     value: $(body.head_commit.id)
   - name: git-commit-date
