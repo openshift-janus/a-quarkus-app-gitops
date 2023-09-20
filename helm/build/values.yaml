@@ -1,13 +1,23 @@
 app:
   name: a-quarkus-app
   namespace: a-quarkus-app-dev
-  cluster: .apps.cluster-t2qpr.t2qpr.sandbox1114.opentlc.com
+  cluster: ""
+  imageRepo: ""
+  sonarHostUrl: ""
+  nexusHostUrl: ""
+  rhacsHostUrl: ""
+  cyclonedxHostUrl: ""
+  mavenImage: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12
+
 
 git:
   branch: main
   repo: https://github.com/openshift-janus/a-quarkus-app
   org: openshift-janus
   name: a-quarkus-app
+  manifestRepo: ""
+  manifestFileProd: ""
+  manifestRepoName: ""
 
 devops:
   branch: main
@@ -19,14 +29,9 @@ devops:
   #For demo purpose only, release tag should be generated automatically
   release_tag: v1.0.0-CR3
 
-image:
-  host: image-registry.openshift-image-registry.svc:5000
-  name: a-quarkus-app-dev/a-quarkus-app
-  tag: latest
+# image:
+#   host: image-registry.openshift-image-registry.svc:5000
+#   name: a-quarkus-app-dev/a-quarkus-app
+#   tag: latest
 
 dep:
-  sonarHostUrl: ""
-  nexusHostUrl: ""
-  rhacsHostUrl: ""
-  mavenImage: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12
-

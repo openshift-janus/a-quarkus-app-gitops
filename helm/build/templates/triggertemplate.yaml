@@ -13,8 +13,10 @@ spec:
     - name: output-image
       description: reference of the image that will get created
       default: '{{ include "image.url" . }}'
-    - description: Sonarqube host url
-      name: sonarqubeHostUrl
+    # - description: Sonarqube host url
+    #   name: sonarqubeHostUrl
+    - name: imageRepo
+      description: target image repository name
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -34,6 +36,10 @@ spec:
             value: a-quarkus-app
           - name: SONARQUBE_PROJECT_SECRET
             value: sonarqube-access-token
+          - name: IMAGE_REPO
+            value: $(tt.params.imageRepo)
+          - name: IMAGE_TAG
+            value: $(tt.params.io.openshift.build.commit.ref)-$(tt.params.io.openshift.build.commit.id)
         pipelineRef:
           name: '{{ .Values.app.name }}-pipeline'
         serviceAccountName: pipeline

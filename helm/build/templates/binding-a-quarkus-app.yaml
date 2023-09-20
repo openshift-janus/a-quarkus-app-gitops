@@ -1,0 +1,23 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  creationTimestamp: null
+  name: app-a-quarkus-app-binding
+spec:
+  params:
+  - name: imageRepo
+    value: "{{ $.Values.app.registry.imageRepo }}"
+  - name: manifestRepo
+    value: "{{ $.Values.app.git.manifestRepo }}"
+  - name: manifestFile
+    value: "{{ $.Values.app.git.manifestFile }}"
+  - name: manifestFileProd
+    value: "{{ $.Values.app.git.manifestFileProd }}"
+  - name: manifestRepoName
+    value: "{{ $.Values.app.git.manifestRepoName }}"
+  - name: tlsVerify
+    value: "true"
+  - name: sonarqubeHostUrl
+    value: "{{ $.Values.app.sonarqubeHostUrl }}"
+  - name: cyclonedxHostUrl
+    value: "{{ $.Values.app.cyclonedxHostUrl }}"

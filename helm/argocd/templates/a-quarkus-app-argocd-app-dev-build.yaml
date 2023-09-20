@@ -14,10 +14,10 @@ spec:
     path: ./helm/build
     helm:
       parameters:
-        - name: dep.nexusHostUrl
-          value: "{{ .Values.dep.nexusHostUrl}}"
-        - name: dep.sonarHostUrl
-          value: "{{ .Values.dep.sonarHostUrl}}"
+        - name:app.nexusHostUrl
+          value: "{{ .Values.app.nexusHostUrl}}"
+        - name:app.sonarHostUrl
+          value: "{{ .Values.app.sonarHostUrl}}"
   destination:
     server: https://kubernetes.default.svc
     namespace: a-quarkus-app-dev
