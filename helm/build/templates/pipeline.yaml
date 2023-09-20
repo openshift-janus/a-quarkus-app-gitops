@@ -20,25 +20,23 @@ spec:
     default: '{{ .Values.git.repo }}'
   - name: source-branch
     description: source branch to build from
-    default: '{{ .Values.git.branch }}'
     type: string
-  - name: COMMIT_SHA
+
+  - name: MAVEN_MIRROR_URL
     type: string
+
+  - name: SONARQUBE_HOST_URL
+    type: string
+  - name: SONARQUBE_PROJECT_KEY
+    type: string
+  - name: SONARQUBE_PROJECT_SECRET
+    type: string
+
   - name: TLSVERIFY
     type: string
   - name: BUILD_EXTRA_ARGS
     type: string
-  - name: IMAGE_REPO
-    type: string
-  - name: IMAGE_TAG
-    type: string
-  - name: MANIFEST_FILE
-    type: string
-  - name: MANIFEST_FILE_PROD
-    type: string
-  - name: MANIFEST_REPO
-    type: string
-  - name: MANIFEST_REPO_NAME
+  - name: GIT_REVISION
     type: string
   - name: GIT_REF
     type: string
@@ -48,58 +46,51 @@ spec:
     type: string
   - name: COMMIT_MESSAGE
     type: string
-  - name: GIT_REPO
-    type: string
-  - default: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
-    name: IMAGE_NAME
-    type: string
-  - name: IMAGE_DIGEST
-    type: string
   - name: IMAGE_REPO
     type: string
   - name: IMAGE_TAG
     type: string
-  - name: TLSVERIFY
-    type: string
-  - name: BUILD_EXTRA_ARGS
-    type: string
-  - default: .
-    name: PATH_CONTEXT
-    type: string
-  - default: openjdk-17-ubi8
-    name: VERSION
-    type: string
-  - default: workshop
-    name: IMAGESTREAM
-    type: string
-  - default: latest
-    name: IMAGESTREAMTAG
-    type: string
-  - default: quay.io/janus_demo
-    name: QUAY_URL
-    type: string
-  - default: '{{ .Values.devops.repo }}'
-    name: DEVOPS_REPO
-    type: string
-  - default: '{{ .Values.devops.branch }}'
-    name: DEVOPS_BRANCH
-    type: string
-  - default: '{{ .Values.devops.filepath }}'
-    name: FILEPATH
-    type: string
-  - default: '{{ .Values.devops.release_tag }}'
-    name: RELEASE_TAG
-    type: string
-  - name: SONARQUBE_HOST_URL
-    type: string
-    default: '{{ .Values.dep.sonarHostUrl}}'
-  - name: SONARQUBE_PROJECT_KEY
-    type: string
-  - name: SONARQUBE_PROJECT_SECRET
-    type: string
-  - name: MAVEN_MIRROR_URL
-    type: string
-    default: '{{ .Values.dep.nexusHostUrl }}/repository/maven-public/'
+
+  # - name: MANIFEST_FILE
+  #   type: string
+  # - name: MANIFEST_FILE_PROD
+  #   type: string
+  # - name: MANIFEST_REPO
+  #   type: string
+  # - name: MANIFEST_REPO_NAME
+  #   type: string
+
+  # - default: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
+  #   name: IMAGE_NAME
+  #   type: string
+  # - name: IMAGE_DIGEST
+  #   type: string
+  #   name: PATH_CONTEXT
+  #   type: string
+  # - default: openjdk-17-ubi8
+  #   name: VERSION
+  #   type: string
+  # - default: workshop
+  #   name: IMAGESTREAM
+  #   type: string
+  # - default: latest
+  #   name: IMAGESTREAMTAG
+  #   type: string
+  # - default: quay.io/janus_demo
+  #   name: QUAY_URL
+  #   type: string
+  # - default: '{{ .Values.devops.repo }}'
+  #   name: DEVOPS_REPO
+  #   type: string
+  # - default: '{{ .Values.devops.branch }}'
+  #   name: DEVOPS_BRANCH
+  #   type: string
+  # - default: '{{ .Values.devops.filepath }}'
+  #   name: FILEPATH
+  #   type: string
+  # - default: '{{ .Values.devops.release_tag }}'
+  #   name: RELEASE_TAG
+  #   type: string
 
   tasks:
   - name: fetch-source
@@ -181,14 +172,14 @@ spec:
   #   workspaces:
   #   - name: source
   #     workspace: workspace
-  - name: build-sign-image
+  - name: build
     retries: 1
     params:
     - name: TLSVERIFY
       value: $(params.TLSVERIFY)
     - name: BUILD_EXTRA_ARGS
       value: --label=io.openshift.build.commit.author='$(params.COMMIT_AUTHOR)' --label=io.openshift.build.commit.date='$(params.COMMIT_DATE)'
-        --label=io.openshift.build.commit.id='$(params.COMMIT_SHA)' --label=io.openshift.build.commit.message='$(params.COMMIT_MESSAGE)'
+        --label=io.openshift.build.commit.id='$(params.GIT_REVISION)' --label=io.openshift.build.commit.message='$(params.COMMIT_MESSAGE)'
         --label=io.openshift.build.commit.ref='$(params.GIT_REF)' --ulimit=nofile=4096:4096
     - name: IMAGE
       value: $(params.IMAGE_REPO):$(params.IMAGE_TAG)
