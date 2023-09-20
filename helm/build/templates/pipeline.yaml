@@ -34,8 +34,8 @@ spec:
 
   - name: TLSVERIFY
     type: string
-  - name: BUILD_EXTRA_ARGS
-    type: string
+  # - name: BUILD_EXTRA_ARGS
+  #   type: string
   - name: GIT_REVISION
     type: string
   - name: GIT_REF

@@ -43,6 +43,20 @@ spec:
             value: $(tt.params.sonarqubeProjectKey)
           - name: SONARQUBE_PROJECT_SECRET
             value: sonarqube-access-token
+          - name: TLSVERIFY
+            value: true
+          # - name: BUILD_EXTRA_ARGS
+          #   value: $(tt.params.imageRepo)
+          - name: GIT_REVISION
+            value: $(tt.params.git-revision)
+          - name: GIT_REF
+            value: $(tt.params.git-ref)
+          - name: COMMIT_DATE
+            value: $(tt.params.git-commit-date)
+          - name: COMMIT_AUTHOR
+            value: $(tt.params.git-commit-author)
+          - name: COMMIT_MESSAGE
+            value: $(tt.params.git-commit-msg)
           - name: IMAGE_REPO
             value: $(tt.params.imageRepo)
           - name: IMAGE_TAG
