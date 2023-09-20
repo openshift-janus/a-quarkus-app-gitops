@@ -35,7 +35,7 @@ spec:
           - name: SONARQUBE_HOST_URL
             value: $(tt.params.sonarqubeHostUrl)
           - name: SONARQUBE_PROJECT_KEY
-            value: '{{ tt.params.sonarqubeProjectKey }}'
+            value: $(tt.params.sonarqubeProjectKey)
           - name: SONARQUBE_PROJECT_SECRET
             value: sonarqube-access-token
           - name: IMAGE_REPO
