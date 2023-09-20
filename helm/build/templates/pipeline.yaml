@@ -11,14 +11,14 @@ metadata:
   name: '{{ .Values.app.name }}-pipeline'
 spec:
   params:
-  - default: '{{ .Values.app.name }}'
-    name: APP_NAME
-    type: string
+  # - default: '{{ .Values.app.name }}'
+  #   name: APP_NAME
+  #   type: string
   - name: source-repo
     description: source repo that contains the application code
     type: string
     default: '{{ .Values.git.repo }}'
-  - name: source-branch
+  - name: git-revision
     description: source branch to build from
     type: string
 
@@ -36,8 +36,8 @@ spec:
     type: string
   # - name: BUILD_EXTRA_ARGS
   #   type: string
-  - name: GIT_REVISION
-    type: string
+  # - name: GIT_REVISION
+  #   type: string
   - name: GIT_REF
     type: string
   - name: COMMIT_DATE
@@ -98,7 +98,7 @@ spec:
     - name: url
       value: $(params.source-repo)
     - name: revision
-      value: $(params.source-branch)
+      value: $(params.git-revision)
     - name: deleteExisting
       value: "true"
     taskRef:
@@ -145,9 +145,9 @@ spec:
   
   - name: scan-source
     params:
-      - name: sonarqubeHostUrl
+      - name: SONARQUBE_HOST_URL
         value: $(params.SONARQUBE_HOST_URL)
-      - name: sonarqubeProjectKey
+      - name: SONARQUBE_PROJECT_KEY
         value: $(params.SONARQUBE_PROJECT_KEY)
       - name: sonarqubeProjectSecret
         value: $(params.SONARQUBE_PROJECT_SECRET)

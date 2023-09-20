@@ -5,17 +5,17 @@ metadata:
   name: app-a-quarkus-app-binding
 spec:
   params:
-  - name: mavenMirrorUrl
+  - name: MAVEN_MIRROR_URL
     value: '{{ $.Values.dep.nexusHostUrl }}/repository/maven-public/'
 
-  - name: sonarqubeHostUrl
-    value: "{{ $.Values.app.sonarqubeHostUrl }}"
-  - name: sonarqubeProjectKey
+  - name: SONARQUBE_HOST_URL
+    value: "{{ $.Values.app.SONARQUBE_HOST_URL }}"
+  - name: SONARQUBE_PROJECT_KEY
     value: "{{ $.Values.app.name }}"
   - name: tlsVerify
     value: "true"
-  - name: imageRepo
-    value: "{{ $.Values.app.imageRepo }}"
+  - name: IMAGE_REPO
+    value: "{{ $.Values.app.IMAGE_REPO }}"
 
   # - name: manifestRepo
   #   value: "{{ $.Values.git.manifestRepo }}"

@@ -5,25 +5,60 @@ metadata:
   name: '{{ .Values.app.name }}-run-pipeline'
 spec:
   params:
-    - name: git-revision
-      description: The git revision
-      default: '{{ .Values.git.branch }}'
-    - name: git-repo-url
-      description: The repo url
-    - name: git-ref
-      description: Git REF (eg HEAD, or TAG)
-    - name: mavenMirrorUrl
-      description: MAVEN MIRROR URL
+    # - name: git-revision
+    #   description: The git revision
+    #   default: '{{ .Values.git.branch }}'
+    # - name: source-repo
+    #   description: The repo url
+    # - name: GIT_REF
+    #   description: Git REF (eg HEAD, or TAG)
+    # - name: MAVEN_MIRROR_URL
+    #   description: MAVEN MIRROR URL
 
-    - name: sonarqubeHostUrl
-      description: Sonarqube host url
-    - name: sonarqubeProjectKey
-      description: Sonarqube Project Key
-    - name: tlsVerify
-      description: 
-    - name: imageRepo
-      description: target image repository name
+    # - name: SONARQUBE_HOST_URL
+    #   description: Sonarqube host url
+    # - name: SONARQUBE_PROJECT_KEY
+    #   description: Sonarqube Project Key
+    # - name: tlsVerify
+    #   description: 
+    # - name: IMAGE_REPO
+    #   description: target image repository name
+  - name: source-repo
+    description: source repo that contains the application code
+    type: string
+    default: '{{ .Values.git.repo }}'
+  - name: git-revision
+    description: source branch to build from
+    type: string
 
+  - name: MAVEN_MIRROR_URL
+    type: string
+
+  - name: SONARQUBE_HOST_URL
+    type: string
+  - name: SONARQUBE_PROJECT_KEY
+    type: string
+  - name: SONARQUBE_PROJECT_SECRET
+    type: string
+
+  - name: TLSVERIFY
+    type: string
+  # - name: BUILD_EXTRA_ARGS
+  #   type: string
+  - name: GIT_REVISION
+    type: string
+  - name: GIT_REF
+    type: string
+  - name: COMMIT_DATE
+    type: string
+  - name: COMMIT_AUTHOR
+    type: string
+  - name: COMMIT_MESSAGE
+    type: string
+  - name: IMAGE_REPO
+    type: string
+  - name: IMAGE_TAG
+    type: string
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -32,35 +67,35 @@ spec:
       spec:
         params:
           - name: source-repo
-            value: $(tt.params.git-repo-url)
-          - name: source-branch
+            value: $(tt.params.source-repo)
+          - name: git-revision
             value: $(tt.params.git-revision)
           - name: MAVEN_MIRROR_URL
-            value: $(tt.params.mavenMirrorUrl)
+            value: $(tt.params.MAVEN_MIRROR_URL)
           - name: SONARQUBE_HOST_URL
-            value: $(tt.params.sonarqubeHostUrl)
+            value: $(tt.params.SONARQUBE_HOST_URL)
           - name: SONARQUBE_PROJECT_KEY
-            value: $(tt.params.sonarqubeProjectKey)
+            value: $(tt.params.SONARQUBE_PROJECT_KEY)
           - name: SONARQUBE_PROJECT_SECRET
             value: sonarqube-access-token
           - name: TLSVERIFY
             value: true
           # - name: BUILD_EXTRA_ARGS
-          #   value: $(tt.params.imageRepo)
-          - name: GIT_REVISION
-            value: $(tt.params.git-revision)
+          #   value: $(tt.params.IMAGE_REPO)
+          # - name: GIT_REVISION
+          #   value: $(tt.params.git-revision)
           - name: GIT_REF
-            value: $(tt.params.git-ref)
+            value: $(tt.params.GIT_REF)
           - name: COMMIT_DATE
-            value: $(tt.params.git-commit-date)
+            value: $(tt.params.COMMIT_DATE)
           - name: COMMIT_AUTHOR
-            value: $(tt.params.git-commit-author)
+            value: $(tt.params.COMMIT_AUTHOR)
           - name: COMMIT_MESSAGE
-            value: $(tt.params.git-commit-msg)
+            value: $(tt.params.COMMIT_MESSAGE)
           - name: IMAGE_REPO
-            value: $(tt.params.imageRepo)
+            value: $(tt.params.IMAGE_REPO)
           - name: IMAGE_TAG
-            value: $(tt.params.git-ref)-$(tt.params.git-revision)
+            value: $(tt.params.GIT_REF)-$(tt.params.git-revision)
         pipelineRef:
           name: '{{ .Values.app.name }}-pipeline'
         serviceAccountName: pipeline
