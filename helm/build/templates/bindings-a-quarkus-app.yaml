@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
   - name: MAVEN_MIRROR_URL
-    value: '{{ $.Values.dep.nexusHostUrl }}/repository/maven-public/'
+    value: '{{ $.Values.app.nexusHostUrl }}/repository/maven-public/'
 
   - name: SONARQUBE_HOST_URL
     value: "{{ $.Values.app.SONARQUBE_HOST_URL }}"
