@@ -179,7 +179,7 @@ spec:
       value: $(params.TLSVERIFY)
     - name: BUILD_EXTRA_ARGS
       value: --label=io.openshift.build.commit.author='$(params.COMMIT_AUTHOR)' --label=io.openshift.build.commit.date='$(params.COMMIT_DATE)'
-        --label=io.openshift.build.commit.id='$(params.GIT_REVISION)' --label=io.openshift.build.commit.message='$(params.COMMIT_MESSAGE)'
+        --label=io.openshift.build.commit.id='$(params.git-revision)' --label=io.openshift.build.commit.message='$(params.COMMIT_MESSAGE)'
         --label=io.openshift.build.commit.ref='$(params.GIT_REF)' --ulimit=nofile=4096:4096
     - name: IMAGE
       value: $(params.IMAGE_REPO):$(params.IMAGE_TAG)
