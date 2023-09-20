@@ -1,0 +1,29 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  creationTimestamp: null
+  name: app-a-quarkus-app-binding
+spec:
+  params:
+  - name: mavenMirrorUrl
+    value: '{{ $.Values.dep.nexusHostUrl }}/repository/maven-public/'
+
+  - name: sonarqubeHostUrl
+    value: "{{ $.Values.app.sonarqubeHostUrl }}"
+  - name: sonarqubeProjectKey
+    value: "{{ $.Values.app.name }}"
+  - name: tlsVerify
+    value: "true"
+  - name: imageRepo
+    value: "{{ $.Values.app.imageRepo }}"
+
+  - name: manifestRepo
+    value: "{{ $.Values.git.manifestRepo }}"
+  - name: manifestFile
+    value: "{{ $.Values.git.manifestFile }}"
+  - name: manifestFileProd
+    value: "{{ $.Values.git.manifestFileProd }}"
+  - name: manifestRepoName
+    value: "{{ $.Values.git.manifestRepoName }}"
+  - name: cyclonedxHostUrl
+    value: "{{ $.Values.app.cyclonedxHostUrl }}"
