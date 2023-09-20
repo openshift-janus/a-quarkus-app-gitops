@@ -12,13 +12,18 @@ spec:
       description: The repo url
     - name: git-ref
       description: Git REF (eg HEAD, or TAG)
-    - name: output-image
-      description: reference of the image that will get created
-      default: '{{ include "image.url" . }}'
-    # - description: Sonarqube host url
-    #   name: sonarqubeHostUrl
+    - name: mavenMirrorUrl
+      description: MAVEN MIRROR URL
+
+    - name: sonarqubeHostUrl
+      description: Sonarqube host url
+    - name: sonarqubeProjectKey
+      description: Sonarqube Project Key
+    - name: tlsVerify
+      description: 
     - name: imageRepo
       description: target image repository name
+
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
