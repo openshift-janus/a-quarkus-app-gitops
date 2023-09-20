@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
   - name: imageRepo
-    value: "{{ $.Values.app.registry.imageRepo }}"
+    value: "{{ $.Values.app.imageRepo }}"
   - name: manifestRepo
     value: "{{ $.Values.app.git.manifestRepo }}"
   - name: manifestFile
