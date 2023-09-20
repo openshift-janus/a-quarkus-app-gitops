@@ -1,7 +1,8 @@
 app:
   name: a-quarkus-app
   namespace: a-quarkus-app-dev
-  cluster: ""
+  #TODO not hard code env variable here
+  cluster: ".apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"
   imageRepo: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
   sonarHostUrl: ""
   nexusHostUrl: ""
