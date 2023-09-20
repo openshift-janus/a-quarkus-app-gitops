@@ -10,6 +10,8 @@ spec:
       default: '{{ .Values.git.branch }}'
     - name: git-repo-url
       description: The repo url
+    - name: git-ref
+      description: Git REF (eg: HEAD, or TAG)
     - name: output-image
       description: reference of the image that will get created
       default: '{{ include "image.url" . }}'
