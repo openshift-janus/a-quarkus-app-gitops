@@ -8,13 +8,13 @@ spec:
   - name: imageRepo
     value: "{{ $.Values.app.imageRepo }}"
   - name: manifestRepo
-    value: "{{ $.Values.app.git.manifestRepo }}"
+    value: "{{ $.Values.git.manifestRepo }}"
   - name: manifestFile
-    value: "{{ $.Values.app.git.manifestFile }}"
+    value: "{{ $.Values.git.manifestFile }}"
   - name: manifestFileProd
-    value: "{{ $.Values.app.git.manifestFileProd }}"
+    value: "{{ $.Values.git.manifestFileProd }}"
   - name: manifestRepoName
-    value: "{{ $.Values.app.git.manifestRepoName }}"
+    value: "{{ $.Values.git.manifestRepoName }}"
   - name: tlsVerify
     value: "true"
   - name: sonarqubeHostUrl
