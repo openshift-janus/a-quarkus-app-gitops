@@ -17,13 +17,13 @@ spec:
   - name: imageRepo
     value: "{{ $.Values.app.imageRepo }}"
 
-  - name: manifestRepo
-    value: "{{ $.Values.git.manifestRepo }}"
-  - name: manifestFile
-    value: "{{ $.Values.git.manifestFile }}"
-  - name: manifestFileProd
-    value: "{{ $.Values.git.manifestFileProd }}"
-  - name: manifestRepoName
-    value: "{{ $.Values.git.manifestRepoName }}"
-  - name: cyclonedxHostUrl
-    value: "{{ $.Values.app.cyclonedxHostUrl }}"
+  # - name: manifestRepo
+  #   value: "{{ $.Values.git.manifestRepo }}"
+  # - name: manifestFile
+  #   value: "{{ $.Values.git.manifestFile }}"
+  # - name: manifestFileProd
+  #   value: "{{ $.Values.git.manifestFileProd }}"
+  # - name: manifestRepoName
+  #   value: "{{ $.Values.git.manifestRepoName }}"
+  # - name: cyclonedxHostUrl
+  #   value: "{{ $.Values.app.cyclonedxHostUrl }}"

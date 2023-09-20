@@ -192,42 +192,42 @@ spec:
     - name: source
       workspace: workspace
 
-  - name: publish-test
-    params:
-    - name: srcImageURL
-      value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-    - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
-    - name: srcTLSverify
-      value: "false"
-    - name: destTLSverify
-      value: "false"
-    runAfter:
-    - build
-    taskRef:
-      kind: ClusterTask
-      name: skopeo-copy
-    workspaces:
-    - name: images-url
-      workspace: workspace
-  - name: publish-prod
-    params:
-    - name: srcImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
-    - name: destImageURL
-      value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:$(params.RELEASE_TAG)
-    - name: srcTLSverify
-      value: "false"
-    - name: destTLSverify
-      value: "false"
-    runAfter:
-    - publish-test
-    taskRef:
-      kind: ClusterTask
-      name: skopeo-copy
-    workspaces:
-    - name: images-url
-      workspace: workspace
+  # - name: publish-test
+  #   params:
+  #   - name: srcImageURL
+  #     value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
+  #   - name: destImageURL
+  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
+  #   - name: srcTLSverify
+  #     value: "false"
+  #   - name: destTLSverify
+  #     value: "false"
+  #   runAfter:
+  #   - build
+  #   taskRef:
+  #     kind: ClusterTask
+  #     name: skopeo-copy
+  #   workspaces:
+  #   - name: images-url
+  #     workspace: workspace
+  # - name: publish-prod
+  #   params:
+  #   - name: srcImageURL
+  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
+  #   - name: destImageURL
+  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:$(params.RELEASE_TAG)
+  #   - name: srcTLSverify
+  #     value: "false"
+  #   - name: destTLSverify
+  #     value: "false"
+  #   runAfter:
+  #   - publish-test
+  #   taskRef:
+  #     kind: ClusterTask
+  #     name: skopeo-copy
+  #   workspaces:
+  #   - name: images-url
+  #     workspace: workspace
   # - name: rox-image-check
   #   runAfter:
   #     - build
@@ -245,23 +245,23 @@ spec:
   #     - name: image_digest
   #       value: '$(tasks.build.results.IMAGE_DIGEST)'
 
-  - name: update-dev-gitops
-    taskRef:
-      name: yq-and-git-push
-    workspaces:
-      - name: output
-        workspace: workspace
-    params:
-      - name: file-path
-        value: $(params.FILEPATH)
-      - name: image-tag
-        value: $(tasks.build.results.IMAGE_DIGEST)
-      - name: helm-chart-git-url
-        value: $(params.DEVOPS_REPO)  
-      - name: helm-chart-git-revision
-        value: $(params.DEVOPS_BRANCH)
-    runAfter:
-    - build
+  # - name: update-dev-gitops
+  #   taskRef:
+  #     name: yq-and-git-push
+  #   workspaces:
+  #     - name: output
+  #       workspace: workspace
+  #   params:
+  #     - name: file-path
+  #       value: $(params.FILEPATH)
+  #     - name: image-tag
+  #       value: $(tasks.build.results.IMAGE_DIGEST)
+  #     - name: helm-chart-git-url
+  #       value: $(params.DEVOPS_REPO)  
+  #     - name: helm-chart-git-revision
+  #       value: $(params.DEVOPS_BRANCH)
+  #   runAfter:
+  #   - build
   workspaces:
   - name: workspace
   - name: maven-settings
