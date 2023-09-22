@@ -16,10 +16,10 @@ spec:
           ref:
             name: github
         - params:
-            - name: source_git_revision
-              value: >-
-                (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
-            - name: overlays
+`            # - name: source_git_revision
+            #   value: >-
+            #     (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
+`            - name: overlays
               value:
               - expression: body.ref.split('/')[2]
                 key: ref
