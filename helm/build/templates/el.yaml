@@ -30,7 +30,7 @@ spec:
               #   value:
               #   - expression: body.ref.split('/')[2]
               #     key: ref
-          ref:
-            name: cel
+        ref:
+          name: cel
       template:
         ref: {{.Values.build.git.repo_name}}-run-pipeline
