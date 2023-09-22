@@ -19,7 +19,7 @@ spec:
         - params:
             - name: source_git_revision
               value: >-
-                (body.ref.contains('{{ .Values.git.branch }}'))
+                (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
             - name: overlays
               value: null
           ref:
