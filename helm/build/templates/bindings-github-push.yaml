@@ -9,7 +9,7 @@ spec:
     value: $(body.repository.url)
   - name: git-repo-name
     value: $(body.repository.full_name)
-  - name: GIT_REF
+  - name: git_ref
     value: $(body.ref)
   - name: source_git_revision
     value: $(body.head_commit.id)
