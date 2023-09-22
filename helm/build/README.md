@@ -1,4 +1,4 @@
-# Install
+# Install pipeline
 ## By helm cli
 example:
 ```
@@ -10,4 +10,24 @@ example:
     --set dev.namespace=a-quarkus-app-dev \
     --set test.namespace=a-quarkus-app-test \
     --set prod.namespace=a-quarkus-app-prod 
+```
+
+# Install TriggerBinder
+```
+cat <<EOF | oc apply -f -
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  creationTimestamp: null
+  name: a-quarkus-app-binding
+  namespace: "a-quarkus-app-dev"
+spec:
+  params:
+  - name: maven_mirror_url
+    value: 'http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/'
+  - name: sonarqube_host_url
+    value: "sonarqube.sonarqube.svc:9000"
+  - name: image_dev_repo
+    value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/dev/a-quarkus-app"
+EOF
 ```

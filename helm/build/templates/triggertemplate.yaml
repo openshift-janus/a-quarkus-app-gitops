@@ -34,7 +34,7 @@ spec:
     
   - name: commit_message
     
-  - name: image_repo
+  - name: image_dev_repo
     
   - name: image_tag
     
@@ -54,7 +54,7 @@ spec:
           - name: sonarqube_host_url
             value: $(tt.params.sonarqube_host_url)
           - name: sonarqube_project_key
-            value: $(tt.params.sonarqube_project_key)
+            value: "{{ .Values.build.git.repo_name }}"
           - name: sonarqube_project_secret
             value: sonarqube-access-token
           - name: tls_verify
@@ -67,8 +67,8 @@ spec:
             value: $(tt.params.commit_author)
           - name: commit_message
             value: $(tt.params.commit_message)
-          - name: image_repo
-            value: $(tt.params.image_repo)
+          - name: image_dev_repo
+            value: $(tt.params.image_dev_repo)
           - name: image_tag
             value: $(tt.params.git_ref)-$(tt.params.source_git_revision)
         pipelineRef:
