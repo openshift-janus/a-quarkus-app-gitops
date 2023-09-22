@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: "{{ .Values.applicationset.app_name }}-appset"
+  namespace: {{ .Values.applicationset.namespace }}
+spec:
+  generators:
+    - git:
+        repoURL: {{ .Values.applicationset.generator_repo_url }}
+        revision: {{ .Values.applicationset.generator_revision }}
+        files:
+        - path: "clusters/**/config.json"
+  template:
+    metadata:
+      name: '{{"{{"}}cluster.name{{"}}"}}-{{ .Values.applicationset.app_name }}'
+    spec:
+      project: default
+      source:
+        path: helm/argocd
+        repoURL: {{ .Values.applicationset.application_repo_url }}
+        targetRevision: {{ .Values.applicationset.application_target_revision }}
+        helm:
+          parameters:
+            - name: argocd.namespace
+              value: "{{ .Values.applicationset.namespace }}"
+            - name: helm_params.build.cluster_subdomain
+              value: "{{ .Values.helm_params.build.cluster_subdomain}}"
+            - name: helm_params.dev.destination.server
+              value: "{{ .Values.helm_params.dev.destination.server}}"
+            - name: helm_params.dev.destination.namespace
+              value: "{{ .Values.helm_params.dev.destination.namespace}}"
+            - name: helm_params.test.destination.server
+              value: "{{ .Values.helm_params.test.destination.server}}"
+            - name: helm_params.test.destination.namespace
+              value: "{{ .Values.helm_params.test.destination.namespace}}"
+            - name: helm_params.prod.destination.server
+              value: "{{ .Values.helm_params.prod.destination.server}}"
+            - name: helm_params.prod.destination.namespace
+              value: "{{ .Values.helm_params.prod.destination.namespace}}"
+      destination:
+        server: '{{"{{"}}cluster.server{{"}}"}}'
+        namespace: "{{ .Values.applicationset.namespace }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

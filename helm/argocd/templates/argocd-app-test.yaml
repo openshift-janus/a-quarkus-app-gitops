@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.app.name }}-test
+  namespace: {{ .Values.argocd.namespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.argocd.repo_url }}
+    targetRevision: {{ .Values.argocd.target_revision }}
+    path: ./helm/app
+    helm:
+      valueFiles:
+        - values-test.yaml
+  destination:
+    server: {{ .Values.test.destination.server }}
+    namespace: {{ .Values.test.destination.namespace }}
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      backoff:
+        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 10m # the maximum amount of time allowed for the backoff strategy

@@ -1,0 +1,12 @@
+env:
+- ci_namespace: "a-quarkus-app-dev"
+  dev_namespace: "a-quarkus-app-dev"
+  test_namespace: "a-quarkus-app-test"
+  prod_namespace: "a-quarkus-app-prod"
+  gitopsnamespace: "janus-argocd"
+  gitopsinfranamespace: "infra-argocd"
+  pipelinesnamespace: "janus-pipelines"
+  janusinstancename: "janus-dev"
+  githubinfraorganization: "ryanzhang-appdev"
+  githubinfrarevision: "main"
+  # ci_namespace: "a-quarkus-app-dev"

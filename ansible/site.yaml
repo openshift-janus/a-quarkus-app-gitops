@@ -1,0 +1,163 @@
+---
+- name: Gather Cluster Info.
+  gather_facts: false
+  hosts: 'localhost'
+  tasks:
+  - name: Determine Host
+    shell: "oc cluster-info | grep -Eo '.cluster(.*?).com'"
+    register: cluster_response
+  - name: Extract Cluster
+    set_fact:
+      cluster_host: "{{ cluster_response.stdout }}"
+
+- name: Create Kubernetes Secret for GPG_PUBLIC_KEY
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Set gpg_public_key by look up env 
+      set_fact:
+        # msg: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
+        gpg_public_key: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
+    - name: Check if GPG_PUBLIC_KEY environment variable exists
+      assert:
+        that:
+          - gpg_public_key != ""
+        fail_msg: "Please set variable GPG_PUBLIC_KEY using the following command export GPG_PUBLIC_KEY=$(gpg --armor --export yourgpgkey|base64) before proceeding with this playbook."
+      tags: check_gpg_public_key
+
+    - name: Create Kubernetes Secret
+      with_items: "{{ env }}"
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: gpg-public-key
+            namespace: "{{item.ci_namespace}}"
+          data:
+            public.key: "{{ lookup('env', 'GPG_PUBLIC_KEY') }}"
+        state: present
+      when: gpg_public_key != ""
+      tags: create_secret
+
+- name: Create or Update Kubernetes Secret with SonarQube Access Token
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Fetch OpenShift Route
+      with_items: "{{ env }}"
+      k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        namespace: "{{item.sonarnamespace}}"
+        label_selectors: 
+          - app = sonarqube
+      register: route_info
+      ignore_errors: yes
+
+    - name: Fail if route doesn't exist
+      fail:
+        msg: "Failed to fetch OpenShift Route URL for SonarQube. Ensure the route with label 'app: sonarqube' exists in the 'sonarqube' namespace."
+      when: not route_info.results[0].resources
+    - name: Extract sonarqube Route URL
+      set_fact:
+        route_url: "{{ route_info.results[0].resources[0].status.ingress[0].host }}"
+      when: route_info.results[0].resources
+    - name: Check if sonarqube_access_token Secret exists
+      with_items: "{{ env }}"
+      k8s_info:
+        kind: Secret
+        name: sonarqube-access-token
+        namespace: "{{item.ci_namespace}}"
+      register: secret_info
+      ignore_errors: yes
+    
+    - name: debug
+      debug:
+        msg: "{{secret_info}}"
+
+    - name: Generate SonarQube Access Token
+      uri:
+        url: "https://{{route_url}}/api/user_tokens/generate?name=a_quarkus_app_project_token"
+        method: POST
+        user: "admin"
+        password: "admin"
+        force_basic_auth: true
+        status_code: 200
+        return_content: yes
+      register: token_response
+      when: not secret_info.results[0].resources
+
+    - name: Extract Token Value
+      set_fact:
+        token_value: "{{ token_response.json.token }}"
+      when: not secret_info.results[0].resources
+
+    - name: Create or Update sonarqube_access_token Secret
+      with_items: "{{ env }}"
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: sonarqube-access-token
+            namespace: "{{item.ci_namespace}}"
+          data:
+            token: "{{ token_value | b64encode }}"
+        state: present
+      when: not secret_info.results[0].resources
+
+- name: Install a-quarkus-app CI pipeline via helm
+  hosts: 'localhost'
+  tasks:
+  - name: Wait for ArgoCD to be Ready
+    with_items: "{{ env }}"
+    kubernetes.core.k8s_info:
+      api_version: argoproj.io/v1alpha1
+      kind: ApplicationSet
+    register: cm_crd
+    until: cm_crd.api_found == true
+    retries: 40
+    delay: 5
+
+  #Todo fetch the svc name and port by k8s_info module
+  - name: Apply ApplicationSet for a-quarkus-app pipeline Deployment
+    with_items: "{{ env }}"
+    kubernetes.core.helm:
+      state: present
+      name: applicationset
+      namespace: "{{ item.gitopsnamespace }}"
+      chart_ref: ../../helm/applicationset
+      values:
+        app:
+          nexusHostUrl: "http://nexus-sonatype-nexus-service.nexus:8081"
+          sonarHostUrl: "http://sonarqube.sonarqube.svc:9000"
+          rhacsHostUrl: ""
+
+  - name: Create or Update TriggerBindings for your app
+    with_items: "{{ env }}"
+    k8s:
+      definition:
+        apiVersion: triggers.tekton.dev/v1beta1
+        kind: TriggerBinding
+        metadata:
+          name: "app-{{ .Values.app.name }}-binding"
+          namespace: 
+          annotations:
+            generated_by: ansible_playbook
+        spec:
+          params:
+          - name: MAVEN_MIRROR_URL
+            value: '{{ $.Values.app.nexusHostUrl }}/repository/maven-public/'
+
+          - name: SONARQUBE_HOST_URL
+            value: "{{ $.Values.app.SONARQUBE_HOST_URL }}"
+          - name: SONARQUBE_PROJECT_KEY
+            value: "{{ $.Values.app.name }}"
+          - name: tlsVerify
+            value: "true"
+          - name: IMAGE_REPO
+            value: "{{ $.Values.app.IMAGE_REPO }}"
+      state: present
+    --tags:
+      - triggerbinding

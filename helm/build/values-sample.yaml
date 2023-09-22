@@ -1,0 +1,28 @@
+#Helm Variable follow 12 factor: build-release-run principle
+# variable is categorize as 
+#  env - should pass from somewhere where helm chart is triggering: eg: helm cli, or ansible module
+#  pipeline - This type is pipeline parameter, tekton pipeline handle the parameter by triggerbindings
+# helm variable follow patter xx_xx;
+build:
+  namespace: ""
+  git:
+    source_repo_url: ""
+    source_git_revision: ""
+    gitops_repo_url: ""
+    gitops_git_revision: ""
+  maven:
+    maven_mirror_url: "http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/"
+    maven_builder_image: "image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12"
+  sonarqube:
+    sonarqube_host_url: "sonarqube.sonarqube.svc:9000"
+  cyclonedx:
+    cyclonedx_host_url: ""
+  image:
+    repo_url: image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app
+    tag: latest
+
+run:
+  name: a-quarkus-app
+  namespace: a-quarkus-app-dev
+  # env
+  cluster_subdomain: ".apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"

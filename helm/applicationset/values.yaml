@@ -1,0 +1,31 @@
+# This define variable for applicationset
+# 
+applicationset:
+  # static
+  generator_repo_url: https://github.com/openshift-janus/a-quarkus-app-gitops.git
+  generator_revision: main
+  application_repo_url: https://github.com/openshift-janus/a-quarkus-app-gitops.git
+  application_target_revision: main
+  app_name: "a-quarkus-app"
+  # env
+  namespace: 
+
+# This define the helm params pass down to argocd application
+# >env
+helm_params:
+  build:
+    cluster_subdoamin: ""
+  dev:
+    destination:
+      server: 
+      namespace: 
+  test:
+    destination:
+      server: 
+      namespace: 
+  prod:
+    destination:
+      server: 
+      namespace: 
+
+
