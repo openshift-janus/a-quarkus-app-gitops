@@ -11,9 +11,6 @@ metadata:
   name: '{{.Values.build.git.repo_name}}-pipeline'
 spec:
   params:
-  # - default: '{{.Values.build.git.repo_name}}'
-  #   name: APP_NAME
-  #   type: string
   - name: source_repo_url
     description: source repo that contains the application code
     type: string
@@ -50,47 +47,6 @@ spec:
     type: string
   - name: image_tag
     type: string
-
-  # - name: MANIFEST_FILE
-  #   type: string
-  # - name: MANIFEST_FILE_PROD
-  #   type: string
-  # - name: MANIFEST_REPO
-  #   type: string
-  # - name: MANIFEST_REPO_NAME
-  #   type: string
-
-  # - default: image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
-  #   name: IMAGE_NAME
-  #   type: string
-  # - name: IMAGE_DIGEST
-  #   type: string
-  #   name: PATH_CONTEXT
-  #   type: string
-  # - default: openjdk-17-ubi8
-  #   name: VERSION
-  #   type: string
-  # - default: workshop
-  #   name: IMAGESTREAM
-  #   type: string
-  # - default: latest
-  #   name: IMAGESTREAMTAG
-  #   type: string
-  # - default: quay.io/janus_demo
-  #   name: QUAY_URL
-  #   type: string
-  # - default: '{{ .Values.devops.repo }}'
-  #   name: DEVOPS_REPO
-  #   type: string
-  # - default: '{{ .Values.devops.branch }}'
-  #   name: DEVOPS_BRANCH
-  #   type: string
-  # - default: '{{ .Values.devops.filepath }}'
-  #   name: FILEPATH
-  #   type: string
-  # - default: '{{ .Values.devops.release_tag }}'
-  #   name: RELEASE_TAG
-  #   type: string
 
   tasks:
   - name: fetch-source
@@ -192,76 +148,6 @@ spec:
     - name: source
       workspace: workspace
 
-  # - name: publish-test
-  #   params:
-  #   - name: srcImageURL
-  #     value: docker://$(params.IMAGE_NAME)@$(tasks.build.results.IMAGE_DIGEST)
-  #   - name: destImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
-  #   - name: srcTLSverify
-  #     value: "false"
-  #   - name: destTLSverify
-  #     value: "false"
-  #   runAfter:
-  #   - build
-  #   taskRef:
-  #     kind: ClusterTask
-  #     name: skopeo-copy
-  #   workspaces:
-  #   - name: images-url
-  #     workspace: workspace
-  # - name: publish-prod
-  #   params:
-  #   - name: srcImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-test:$(params.RELEASE_TAG)
-  #   - name: destImageURL
-  #     value: docker://$(params.QUAY_URL)/$(params.APP_NAME)-prod:$(params.RELEASE_TAG)
-  #   - name: srcTLSverify
-  #     value: "false"
-  #   - name: destTLSverify
-  #     value: "false"
-  #   runAfter:
-  #   - publish-test
-  #   taskRef:
-  #     kind: ClusterTask
-  #     name: skopeo-copy
-  #   workspaces:
-  #   - name: images-url
-  #     workspace: workspace
-  # - name: rox-image-check
-  #   runAfter:
-  #     - build
-  #   taskRef:
-  #     kind: ClusterTask
-  #     name: rox-image-check
-  #   params:
-  #     - name: rox_central_endpoint
-  #       value: roxsecrets
-  #     - name: rox_api_token
-  #       value: roxsecrets
-  #     - name: image
-  #       value: >-
-  #         image-registry.openshift-image-registry.svc:5000/$(params.APP_NAME)-dev/$(params.APP_NAME)
-  #     - name: image_digest
-  #       value: '$(tasks.build.results.IMAGE_DIGEST)'
-
-  # - name: update-dev-gitops
-  #   taskRef:
-  #     name: yq-and-git-push
-  #   workspaces:
-  #     - name: output
-  #       workspace: workspace
-  #   params:
-  #     - name: file-path
-  #       value: $(params.FILEPATH)
-  #     - name: image-tag
-  #       value: $(tasks.build.results.IMAGE_DIGEST)
-  #     - name: helm-chart-git-url
-  #       value: $(params.DEVOPS_REPO)  
-  #     - name: helm-chart-source_git_revision
-  #       value: $(params.DEVOPS_BRANCH)
-  #   runAfter:
-  #   - build
   workspaces:
   - name: workspace
   - name: maven-settings

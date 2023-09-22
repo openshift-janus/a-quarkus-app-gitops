@@ -25,17 +25,17 @@ spec:
               value: "{{ .Values.applicationset.namespace }}"
             - name: helm_params.build.cluster_subdomain
               value: "{{ .Values.helm_params.build.cluster_subdomain}}"
-            - name: helm_params.dev.destination.server
+            - name: dev.destination.server
               value: "{{ .Values.helm_params.dev.destination.server}}"
-            - name: helm_params.dev.destination.namespace
+            - name: dev.destination.namespace
               value: "{{ .Values.helm_params.dev.destination.namespace}}"
-            - name: helm_params.test.destination.server
+            - name: test.destination.server
               value: "{{ .Values.helm_params.test.destination.server}}"
-            - name: helm_params.test.destination.namespace
+            - name: test.destination.namespace
               value: "{{ .Values.helm_params.test.destination.namespace}}"
-            - name: helm_params.prod.destination.server
+            - name: prod.destination.server
               value: "{{ .Values.helm_params.prod.destination.server}}"
-            - name: helm_params.prod.destination.namespace
+            - name: prod.destination.namespace
               value: "{{ .Values.helm_params.prod.destination.namespace}}"
       destination:
         server: '{{"{{"}}cluster.server{{"}}"}}'

@@ -5,24 +5,6 @@ metadata:
   name: '{{.Values.build.git.repo_name}}-run-pipeline'
 spec:
   params:
-    # - name: source_git_revision
-    #   description: The git revision
-    #   default: '{{ .Values.git.branch }}'
-    # - name: source_repo_url
-    #   description: The repo url
-    # - name: git_ref
-    #   description: Git REF (eg HEAD, or TAG)
-    # - name: MAVEN_MIRROR_URL
-    #   description: MAVEN MIRROR URL
-
-    # - name: sonarqube_host_url
-    #   description: Sonarqube host url
-    # - name: sonarqube_project_key
-    #   description: Sonarqube Project Key
-    # - name: tlsVerify
-    #   description: 
-    # - name: image_repo
-    #   description: target image repository name
   - name: source_repo_url
     description: source repo that contains the application code
     default: '{{ .Values.build.git.repo_name }}'
@@ -77,8 +59,6 @@ spec:
             value: sonarqube-access-token
           - name: tls_verify
             value: true
-          # - name: BUILD_EXTRA_ARGS
-          #   value: $(tt.params.image_repo)
           - name: git_ref
             value: $(tt.params.git_ref)
           - name: commit_date

@@ -1,6 +1,6 @@
 {
   "cluster": {
-    "name": "dev-cluster-",
+    "name": "dev-cluster",
     "server": "https://kubernetes.default.svc"
   }
 }
