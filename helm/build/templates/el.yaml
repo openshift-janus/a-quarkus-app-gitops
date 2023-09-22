@@ -10,20 +10,27 @@ spec:
       - ref: a-quarkus-app-binding
       - ref: github-push-binding
       interceptors:
-        - params:
-            - name: eventTypes
-              value: ["push"]
-          ref:
-            name: github
-        - params:
-            # - name: source_git_revision
-            #   value: >-
-            #     (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
-            - name: overlays
-              value:
-              - expression: body.ref.split('/')[2]
-                key: ref
-          ref:
-            name: cel
+      - params:
+          - name: eventTypes
+            value: ["push"]
+        ref:
+          name: github
+      - params:
+      - name: filter
+        value: (header.match('X-GitHub-Event', 'push') && body.repository.full_name
+          == 'openshift-janus/a-quarkus-app')
+      - name: overlays
+        value:
+        - expression: body.ref.split('/')[2]
+          key: ref
+            # # - name: source_git_revision
+            # #   value: >-
+            # #     (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
+            # - name: overlays
+            #   value:
+            #   - expression: body.ref.split('/')[2]
+            #     key: ref
+        ref:
+          name: cel
       template:
         ref: {{.Values.build.git.repo_name}}-run-pipeline
