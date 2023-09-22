@@ -25,6 +25,8 @@ spec:
               value: "{{ .Values.applicationset.namespace }}"
             - name: helm_params.build.cluster_subdomain
               value: "{{ .Values.helm_params.build.cluster_subdomain}}"
+            - name: helm_params.build.maven.maven_builder_image
+              value: "{{ .Values.helm_params.build.maven.maven_builder_image}}"
             - name: dev.destination.server
               value: "{{ .Values.helm_params.dev.destination.server}}"
             - name: dev.destination.namespace

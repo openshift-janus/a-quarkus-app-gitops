@@ -15,6 +15,8 @@ applicationset:
 helm_params:
   build:
     cluster_subdoamin: ""
+  maven:
+    maven_builder_image: ""
   dev:
     destination:
       server: 

@@ -15,7 +15,9 @@ spec:
     helm:
       parameters:
         - name: build.cluster_subdomain
-          value: "{{ .Values.helm_params.build.cluster_subdomain }}"
+          value: "{{ .Values.helm_params.build.cluster_subdomain}}"
+        - name: build.maven.maven_builder_image
+          value: "{{ .Values.helm_params.build.maven.maven_builder_image}}"
   destination:
     server: {{ .Values.dev.destination.server }}
     namespace: {{ .Values.dev.destination.namespace }}

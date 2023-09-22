@@ -6,6 +6,7 @@ example:
     --set applicationset.namespace=janus-argocd \
     --set helm_params.argocd.namespace="janus-argocd" \
     --set helm_params.build.cluster_subdomain="cluster-tpklj.tpklj.sandbox2638.opentlc.com" \
+    --set helm_params.build.maven.maven_builder_image="image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12" \
     --set helm_params.dev.destination.server="https://kubernetes.default.svc" \
     --set helm_params.test.destination.server="https://kubernetes.default.svc" \
     --set helm_params.prod.destination.server="https://kubernetes.default.svc" \
