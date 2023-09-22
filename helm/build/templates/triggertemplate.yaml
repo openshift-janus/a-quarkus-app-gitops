@@ -2,61 +2,59 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: '{{ .Values.app.name }}-run-pipeline'
+  name: '{{.Values.build.git.repo_name}}-run-pipeline'
 spec:
   params:
-    # - name: git-revision
+    # - name: source_git_revision
     #   description: The git revision
     #   default: '{{ .Values.git.branch }}'
-    # - name: source-repo
+    # - name: source_repo_url
     #   description: The repo url
-    # - name: GIT_REF
+    # - name: git_ref
     #   description: Git REF (eg HEAD, or TAG)
     # - name: MAVEN_MIRROR_URL
     #   description: MAVEN MIRROR URL
 
-    # - name: SONARQUBE_HOST_URL
+    # - name: sonarqube_host_url
     #   description: Sonarqube host url
-    # - name: SONARQUBE_PROJECT_KEY
+    # - name: sonarqube_project_key
     #   description: Sonarqube Project Key
     # - name: tlsVerify
     #   description: 
-    # - name: IMAGE_REPO
+    # - name: image_repo
     #   description: target image repository name
-  - name: source-repo
+  - name: source_repo_url
     description: source repo that contains the application code
-    default: '{{ .Values.git.repo }}'
-  - name: git-revision
+    default: '{{ .Values.build.git.repo_name }}'
+  - name: source_git_revision
     description: source branch to build from
     
 
-  - name: MAVEN_MIRROR_URL
+  - name: maven_mirror_url
     
 
-  - name: SONARQUBE_HOST_URL
+  - name: sonarqube_host_url
     
-  - name: SONARQUBE_PROJECT_KEY
+  - name: sonarqube_project_key
     
-  - name: SONARQUBE_PROJECT_SECRET
+  - name: sonarqube_project_secret
     
 
-  - name: TLSVERIFY
+  - name: tls_verify
     
   # - name: BUILD_EXTRA_ARGS
   #   
-  - name: GIT_REVISION
+  - name: git_ref
     
-  - name: GIT_REF
+  - name: commit_date
     
-  - name: COMMIT_DATE
+  - name: commit_author
     
-  - name: COMMIT_AUTHOR
+  - name: commit_message
     
-  - name: COMMIT_MESSAGE
+  - name: image_repo
     
-  - name: IMAGE_REPO
-    
-  - name: IMAGE_TAG
+  - name: image_tag
     
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
@@ -65,49 +63,47 @@ spec:
         name: $(uid)
       spec:
         params:
-          - name: source-repo
-            value: $(tt.params.source-repo)
-          - name: git-revision
-            value: $(tt.params.git-revision)
-          - name: MAVEN_MIRROR_URL
-            value: $(tt.params.MAVEN_MIRROR_URL)
-          - name: SONARQUBE_HOST_URL
-            value: $(tt.params.SONARQUBE_HOST_URL)
-          - name: SONARQUBE_PROJECT_KEY
-            value: $(tt.params.SONARQUBE_PROJECT_KEY)
-          - name: SONARQUBE_PROJECT_SECRET
+          - name: source_repo_url
+            value: $(tt.params.source_repo_url)
+          - name: source_git_revision
+            value: $(tt.params.source_git_revision)
+          - name: maven_mirror_url
+            value: $(tt.params.maven_mirror_url)
+          - name: sonarqube_host_url
+            value: $(tt.params.sonarqube_host_url)
+          - name: sonarqube_project_key
+            value: $(tt.params.sonarqube_project_key)
+          - name: sonarqube_project_secret
             value: sonarqube-access-token
-          - name: TLSVERIFY
+          - name: tls_verify
             value: true
           # - name: BUILD_EXTRA_ARGS
-          #   value: $(tt.params.IMAGE_REPO)
-          # - name: GIT_REVISION
-          #   value: $(tt.params.git-revision)
-          - name: GIT_REF
-            value: $(tt.params.GIT_REF)
-          - name: COMMIT_DATE
-            value: $(tt.params.COMMIT_DATE)
-          - name: COMMIT_AUTHOR
-            value: $(tt.params.COMMIT_AUTHOR)
-          - name: COMMIT_MESSAGE
-            value: $(tt.params.COMMIT_MESSAGE)
-          - name: IMAGE_REPO
-            value: $(tt.params.IMAGE_REPO)
-          - name: IMAGE_TAG
-            value: $(tt.params.GIT_REF)-$(tt.params.git-revision)
+          #   value: $(tt.params.image_repo)
+          - name: git_ref
+            value: $(tt.params.git_ref)
+          - name: commit_date
+            value: $(tt.params.commit_date)
+          - name: commit_author
+            value: $(tt.params.commit_author)
+          - name: commit_message
+            value: $(tt.params.commit_message)
+          - name: image_repo
+            value: $(tt.params.image_repo)
+          - name: image_tag
+            value: $(tt.params.git_ref)-$(tt.params.source_git_revision)
         pipelineRef:
-          name: '{{ .Values.app.name }}-pipeline'
+          name: '{{.Values.build.git.repo_name}}-pipeline'
         serviceAccountName: pipeline
         timeout: 1h0m0s
         workspaces:
           - name: workspace
             persistentVolumeClaim:
-              claimName: a-quarkus-app-build-pvc
+              claimName: "{{.Values.build.git.repo_name}}-build-pvc"
           - name: maven-settings
             emptyDir: {}
           - name: maven-local-repo
             persistentVolumeClaim:
-              claimName: m2repo-pvc
+              claimName: "{{.Values.build.git.repo_name}}-m2repo-pvc"
           # - name: workspace
           #   volumeClaimTemplate:
           #     spec:
@@ -127,7 +123,7 @@ spec:
           #   # emptyDir: {}
           - name: gitcredential
             secret:
-              secretName: '{{ .Values.app.name }}-github-pat'
+              secretName: '{{.Values.build.git.repo_name}}-github-pat'
           - name: secrets
             secret:
               secretName: gpg-public-key

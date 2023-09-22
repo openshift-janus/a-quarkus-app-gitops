@@ -1,18 +1,18 @@
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: GitWebhook
 metadata:
-  name: {{ .Values.app.name }}
+  name: {{.Values.build.git.repo_name}}
 spec:
   gitHub:
     gitServerCredentials:
-      name: {{ .Values.app.name }}-github-pat
-  repositoryOwner: {{ .Values.git.org }}
+      name: {{.Values.build.git.repo_name}}-github-pat
+  repositoryOwner: {{ .Values.build.git.repo_owner }}
   ownerType:  "organization"
-  repositoryName: {{ .Values.git.name }}
-  webhookURL: https://webhook-{{ .Values.app.name }}-el-{{ .Values.app.namespace }}{{ .Values.app.cluster }}
+  repositoryName: {{ .Values.build.git.repo_name }}
+  webhookURL: https://webhook-{{.Values.build.git.repo_name}}-el-{{ .Values.build.namespace }}.{{ .Values.build.cluster_subdomain }}
   insecureSSL: true
   webhookSecret:
-    name: {{ .Values.app.name }}-webhook
+    name: {{.Values.build.git.repo_name}}-webhook
   events:
     - push  
   content: json

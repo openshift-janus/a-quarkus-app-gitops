@@ -5,17 +5,17 @@ metadata:
   name: github-push-binding
 spec:
   params:
-  - name: source-repo
+  - name: source_repo_url
     value: $(body.repository.url)
   - name: git-repo-name
     value: $(body.repository.full_name)
   - name: GIT_REF
     value: $(body.ref)
-  - name: git-revision
+  - name: source_git_revision
     value: $(body.head_commit.id)
-  - name: COMMIT_DATE
+  - name: commit_date
     value: $(body.head_commit.timestamp)
-  - name: COMMIT_MESSAGE
+  - name: commit_message
     value: $(body.head_commit.message)
-  - name: COMMIT_AUTHOR
+  - name: commit_author
     value: $(body.head_commit.author.name)

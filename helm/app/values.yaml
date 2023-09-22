@@ -1,18 +1,18 @@
-# Default values for quarkus-template.
+# Default values for app.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace:
-  enabled: true
-  name: a-quarkus-app
-  argocd:
-    name: default
+# namespace:
+#   enabled: true
+#   name: a-quarkus-app
+#   argocd:
+#     name: default
 replicaCount: 1
 image:
-  repository: image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app
+  repository: ""
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: sha256:a3d8fefea7375e55239d6638a3de8b1bd9c5a5f28e99f363e2f293518da65dae
+  tag: ""
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

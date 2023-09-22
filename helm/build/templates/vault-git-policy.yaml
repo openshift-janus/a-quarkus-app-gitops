@@ -1,7 +1,7 @@
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: Policy
 metadata:
-  name: {{ .Values.app.name }}-read-token
+  name: {{.Values.build.git.repo_name}}-read-token
   namespace: vault-admin
 spec:
   # Add fields here
@@ -10,12 +10,12 @@ spec:
     role: policy-admin
   policy: |
     # create tokens
-    path "/github/token/{{ .Values.app.name }}" {
+    path "/github/token/{{.Values.build.git.repo_name}}" {
       capabilities = ["read"]
     }
-    path "/quay/creds/{{ .Values.app.name }}" {
+    path "/quay/creds/{{.Values.build.git.repo_name}}" {
       capabilities = ["read"]
     }
-    path "/quay/creds/{{ .Values.app.name }}-pusher" {
+    path "/quay/creds/{{.Values.build.git.repo_name}}-pusher" {
       capabilities = ["read"]
     }

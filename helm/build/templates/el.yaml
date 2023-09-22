@@ -2,7 +2,7 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: {{ .Values.app.name }}-el
+  name: {{.Values.build.git.repo_name}}-el
 spec:
   serviceAccountName: pipeline
   triggers:
@@ -17,7 +17,7 @@ spec:
           ref:
             name: github
         - params:
-            - name: git-revision
+            - name: source_git_revision
               value: >-
                 (body.ref.contains('{{ .Values.git.branch }}'))
             - name: overlays
@@ -25,4 +25,4 @@ spec:
           ref:
             name: cel
       template:
-        ref: {{ .Values.app.name }}-run-pipeline
+        ref: {{.Values.build.git.repo_name}}-run-pipeline

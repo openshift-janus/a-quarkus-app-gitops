@@ -2,53 +2,53 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   labels:
-    app.kubernetes.io/instance: '{{ .Values.app.name }}'
-    app.kubernetes.io/name: '{{ .Values.app.name }}'
+    app.kubernetes.io/instance: '{{.Values.build.git.repo_name}}'
+    app.kubernetes.io/name: '{{.Values.build.git.repo_name}}'
     operator.tekton.dev/operand-name: openshift-pipelines-addons
     pipeline.openshift.io/runtime: java
     pipeline.openshift.io/runtime-version: openjdk-17-ubi8
     pipeline.openshift.io/type: kubernetes
-  name: '{{ .Values.app.name }}-pipeline'
+  name: '{{.Values.build.git.repo_name}}-pipeline'
 spec:
   params:
-  # - default: '{{ .Values.app.name }}'
+  # - default: '{{.Values.build.git.repo_name}}'
   #   name: APP_NAME
   #   type: string
-  - name: source-repo
+  - name: source_repo_url
     description: source repo that contains the application code
     type: string
-    default: '{{ .Values.git.repo }}'
-  - name: git-revision
+    default: '{{ .Values.build.git.repo_name }}'
+  - name: source_git_revision
     description: source branch to build from
     type: string
 
-  - name: MAVEN_MIRROR_URL
+  - name: maven_mirror_url
     type: string
 
-  - name: SONARQUBE_HOST_URL
+  - name: sonarqube_host_url
     type: string
-  - name: SONARQUBE_PROJECT_KEY
+  - name: sonarqube_project_key
     type: string
-  - name: SONARQUBE_PROJECT_SECRET
+  - name: sonarqube_project_secret
     type: string
 
-  - name: TLSVERIFY
+  - name: tls_verify
     type: string
   # - name: BUILD_EXTRA_ARGS
   #   type: string
   # - name: GIT_REVISION
   #   type: string
-  - name: GIT_REF
+  - name: git_ref
     type: string
-  - name: COMMIT_DATE
+  - name: commit_date
     type: string
-  - name: COMMIT_AUTHOR
+  - name: commit_author
     type: string
-  - name: COMMIT_MESSAGE
+  - name: commit_message
     type: string
-  - name: IMAGE_REPO
+  - name: image_repo
     type: string
-  - name: IMAGE_TAG
+  - name: image_tag
     type: string
 
   # - name: MANIFEST_FILE
@@ -96,9 +96,9 @@ spec:
   - name: fetch-source
     params:
     - name: url
-      value: $(params.source-repo)
+      value: $(params.source_repo_url)
     - name: revision
-      value: $(params.git-revision)
+      value: $(params.source_git_revision)
     - name: deleteExisting
       value: "true"
     taskRef:
@@ -125,9 +125,9 @@ spec:
   - name: package
     params:
       - name: MAVEN_IMAGE
-        value: '{{ .Values.app.mavenImage }}'
+        value: '{{ .Values.build.maven.maven_builder_image }}'
       - name: MAVEN_MIRROR_URL
-        value: $(params.MAVEN_MIRROR_URL)
+        value: $(params.maven_mirror_url)
       - name: GOAL
         value: "package"
     runAfter:
@@ -146,11 +146,11 @@ spec:
   - name: scan-source
     params:
       - name: SONARQUBE_HOST_URL
-        value: $(params.SONARQUBE_HOST_URL)
-      - name: SONARQUBE_PROJECT_KEY
-        value: $(params.SONARQUBE_PROJECT_KEY)
+        value: $(params.sonarqube_host_url)
+      - name: sonarqube_project_key
+        value: $(params.sonarqube_project_key)
       - name: sonarqubeProjectSecret
-        value: $(params.SONARQUBE_PROJECT_SECRET)
+        value: $(params.sonarqube_project_secret)
     runAfter:
       - package
     taskRef:
@@ -175,14 +175,14 @@ spec:
   - name: build
     retries: 1
     params:
-    - name: TLSVERIFY
-      value: $(params.TLSVERIFY)
+    - name: tls_verify
+      value: $(params.tls_verify)
     - name: BUILD_EXTRA_ARGS
-      value: --label=io.openshift.build.commit.author='$(params.COMMIT_AUTHOR)' --label=io.openshift.build.commit.date='$(params.COMMIT_DATE)'
-        --label=io.openshift.build.commit.id='$(params.git-revision)' --label=io.openshift.build.commit.message='$(params.COMMIT_MESSAGE)'
-        --label=io.openshift.build.commit.ref='$(params.GIT_REF)' --ulimit=nofile=4096:4096
+      value: --label=io.openshift.build.commit.author='$(params.commit_author)' --label=io.openshift.build.commit.date='$(params.commit_date)'
+        --label=io.openshift.build.commit.id='$(params.source_git_revision)' --label=io.openshift.build.commit.message='$(params.commit_message)'
+        --label=io.openshift.build.commit.ref='$(params.git_ref)' --ulimit=nofile=4096:4096
     - name: IMAGE
-      value: $(params.IMAGE_REPO):$(params.IMAGE_TAG)
+      value: $(params.image_repo):$(params.image_tag)
     runAfter:
     - scan-source
     taskRef:
@@ -258,7 +258,7 @@ spec:
   #       value: $(tasks.build.results.IMAGE_DIGEST)
   #     - name: helm-chart-git-url
   #       value: $(params.DEVOPS_REPO)  
-  #     - name: helm-chart-git-revision
+  #     - name: helm-chart-source_git_revision
   #       value: $(params.DEVOPS_BRANCH)
   #   runAfter:
   #   - build

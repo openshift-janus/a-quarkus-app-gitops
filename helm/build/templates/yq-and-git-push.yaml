@@ -14,7 +14,7 @@ spec:
       name: helm-chart-git-url
       type: string
     - description: revision to be used from repo of the code for deployment
-      name: helm-chart-git-revision
+      name: helm-chart-source_git_revision
       type: string
   steps:
     - image: 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8:v1.6.2'
@@ -28,7 +28,7 @@ spec:
 
         git config --global user.name "tekton-cd-bot"
 
-        git clone "$(params.helm-chart-git-url)" --branch "$(params.helm-chart-git-revision)" --single-branch
+        git clone "$(params.helm-chart-git-url)" --branch "$(params.helm-chart-source_git_revision)" --single-branch
 
         #git remote -v
 
@@ -54,7 +54,7 @@ spec:
       script: |
         #!/bin/sh 
         echo $(params.helm-chart-git-url)
-        echo $(params.helm-chart-git-revision) 
+        echo $(params.helm-chart-source_git_revision) 
         echo $(workspaces.output.path)
         echo $(dirname -- "$(params.file-path)")
         
@@ -78,7 +78,7 @@ spec:
         # git remote -v
         # cat .git/config
         # cat ~/.git-credentials
-        git push -u origin $(params.helm-chart-git-revision)  
+        git push -u origin $(params.helm-chart-source_git_revision)  
       workingDir: $(workspaces.output.path)
   workspaces:
     - description: The git repo will be cloned onto the volume backing this workspace

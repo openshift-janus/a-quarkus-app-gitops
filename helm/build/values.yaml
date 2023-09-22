@@ -1,37 +1,72 @@
-app:
-  name: a-quarkus-app
-  namespace: a-quarkus-app-dev
-  #TODO not hard code env variable here
-  cluster: ".apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"
-  IMAGE_REPO: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
-  sonarHostUrl: ""
-  nexusHostUrl: ""
-  rhacsHostUrl: ""
-  cyclonedxHostUrl: ""
-  mavenImage: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12
+#Helm Variable follow 12 factor: build-release-run principle
+# variable is categorize as 
+# 1. static - define value in this file
+# 2. env - should pass from somewhere where helm chart is triggering: eg: helm cli, or ansible module
+# 3. pipeline - This type is pipeline parameter, tekton pipeline handle the parameter by triggerbindings
+# helm variable follow patter xx_xx;
 
-git:
-  branch: main
-  repo: https://github.com/openshift-janus/a-quarkus-app
-  org: openshift-janus
-  name: a-quarkus-app
-  manifestRepo: ""
-  manifestFileProd: ""
-  manifestRepoName: ""
+build:
+  # static
+  namespace: "a-quarkus-app-dev"
+  #env
+  cluster_subdomain: ""
 
-devops:
-  branch: main
-  repo: https://github.com/openshift-janus/a-quarkus-app-gitops
-  org: openshift-janus
-  name: a-quarkus-app-gitops
-  #the repo contains a typo quarkus instead of quarkus
-  filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
-  #For demo purpose only, release tag should be generated automatically
-  release_tag: v1.0.0-CR3
+  # static
+  git:
+    source_repo_url: "https://github.com/openshift-janus/a-quarkus-app.git"
+    source_git_revision: "main"
+    gitops_repo_url: "https://github.com/openshift-janus/a-quarkus-app-gitops.git"
+    gitops_git_revision: main
+    repo_owner: openshift-janus
+    repo_name: a-quarkus-app
+  maven:
+    # pipeline
+    maven_mirror_url: ""
+    # pipeline
+    maven_builder_image: ""
+  sonarqube:
+    # pipeline
+    sonarqube_host_url: ""
+  cyclonedx:
+    # pipeline
+    cyclonedx_host_url: ""
+  image:
+    repo_url:
+    tag:
+
+# app:
+#   name: a-quarkus-app
+#   namespace: a-quarkus-app-dev
+#   #TODO not hard code env variable here
+#   cluster: ".apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"
+#   image_repo: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
+#   sonarHostUrl: ""
+#   nexusHostUrl: ""
+#   rhacsHostUrl: ""
+#   cyclonedxHostUrl: ""
+#   mavenImage: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12
+
+# git:
+#   branch: main
+#   repo: https://github.com/openshift-janus/a-quarkus-app
+#   org: openshift-janus
+#   name: a-quarkus-app
+#   manifestRepo: ""
+#   manifestFileProd: ""
+#   manifestRepoName: ""
+
+# devops:
+#   branch: main
+#   repo: https://github.com/openshift-janus/a-quarkus-app-gitops
+#   org: openshift-janus
+#   name: a-quarkus-app-gitops
+#   #the repo contains a typo quarkus instead of quarkus
+#   filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
+#   #For demo purpose only, release tag should be generated automatically
+#   release_tag: v1.0.0-CR3
 
 # image:
 #   host: image-registry.openshift-image-registry.svc:5000
 #   name: a-quarkus-app-dev/a-quarkus-app
 #   tag: latest
 
-dep:
