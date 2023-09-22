@@ -20,7 +20,9 @@ spec:
               value: >-
                 (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
             - name: overlays
-              value: null
+              value:
+              - expression: body.ref.split('/')[2]
+                key: ref
           ref:
             name: cel
       template:
