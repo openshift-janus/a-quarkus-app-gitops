@@ -28,6 +28,6 @@ spec:
   - name: sonarqube_host_url
     value: "http://sonarqube.sonarqube.svc:9000"
   - name: image_dev_repo
-    value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/dev/a-quarkus-app"
+    value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
 EOF
 ```
