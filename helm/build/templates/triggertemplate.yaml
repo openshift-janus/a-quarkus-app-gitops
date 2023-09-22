@@ -12,7 +12,8 @@ spec:
     description: source branch to build from
     
 
-  - name: mavenMirrorUrl
+  - name: maven_mirror_url
+    
 
   - name: sonarqube_host_url
     
@@ -49,7 +50,7 @@ spec:
           - name: source_git_revision
             value: $(tt.params.source_git_revision)
           - name: maven_mirror_url
-            value: $(tt.params.mavenMirrorUrl)
+            value: $(tt.params.maven_mirror_url)
           - name: sonarqube_host_url
             value: $(tt.params.sonarqube_host_url)
           - name: sonarqube_project_key
