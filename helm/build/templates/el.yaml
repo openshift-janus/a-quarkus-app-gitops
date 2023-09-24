@@ -23,6 +23,13 @@ spec:
           value:
           - expression: body.ref.split('/')[2]
             key: ref
+              # # - name: source_git_revision
+              # #   value: >-
+              # #     (body.ref.contains('{{ .Values.build.git.source_repo_url }}'))
+              # - name: overlays
+              #   value:
+              #   - expression: body.ref.split('/')[2]
+              #     key: ref
         ref:
           name: cel
       template:
