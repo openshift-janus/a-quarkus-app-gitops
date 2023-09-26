@@ -22,9 +22,9 @@ spec:
     server: {{ .Values.dev.destination.server }}
     namespace: {{ .Values.dev.destination.namespace }}
   syncPolicy:
-    automated: 
-      prune: true
-      selfHeal: true
+    automated: {}
+      # prune: true
+      # selfHeal: true
     syncOptions:
     - CreateNamespace=true
     - RespectIgnoreDifferences=true
