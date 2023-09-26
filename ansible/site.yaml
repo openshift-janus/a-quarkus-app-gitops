@@ -292,3 +292,74 @@
       state: present
     tags:
       - triggerbinding
+
+- name: Create Quay.io Robot Accounts and Kubernetes Secrets
+  hosts: localhost
+  gather_facts: no
+  vars:
+    baseurl: "https://{{quay_route_url}}"
+    organizations:
+      # - name: develop
+      #   robot_shortname: ci
+      - name: test
+        robot_shortname: ci
+      # - name: prod
+      #   robot_shortname: ci
+    # Define your .dockerconfigjson content here
+    # dockerconfigjson: |
+    #   {
+    #     "auths": {
+    #       "https://{{quay_route_url}}" {
+    #         "auth": "{{ my_robot_name }}:{{ my_robot_token_base64 }}",
+    #         "email": ""
+    #       }
+    #     }
+    #   }
+  tasks:
+    - name: Create Organization Robot Account and Fetch Token
+      uri:
+        url: "{{ baseurl }}/api/v1/organization/{{ item.name }}/robots/{{ item.robot_shortname }}"
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        body: "{}"
+        status_code: 200
+      register: robot_account_response
+      with_items: "{{ organizations }}"
+    - name: debug    
+      debug:
+        var: robot_account_response 
+
+    - name: Extract Token from Response
+      set_fact:
+        robot_token: "{{ item.json.token }}"
+      with_items: "{{ robot_account_response.results }}"
+    
+    - name: Create Kubernetes Secret
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: quay-robot-secret-{{ item.name }}
+            namespace: "{{env.appname}}-{{item.name}}"  # Replace with your desired namespace
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: "{{ dockerconfigjson | b64encode }}"
+      with_items: "{{ organizations }}"
+      vars:
+        my_robot_name: "{{ item.name }}+{{ item.robot_shortname }}"
+        dockerconfigjson: |
+          {
+            "auths": {
+              "{{baseurl}}": {
+                "auth": "{{ my_robot_name }}:{{ robot_token | b64encode }}",
+                "email": ""
+              }
+            }
+          }
+      # vars:
+      #   my_robot_name: "ci"  # Replace with your robot name
+      #   my_robot_token_base64: "{{ robot_token | b64encode }}"
