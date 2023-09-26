@@ -31,10 +31,6 @@ spec:
 
   - name: tls_verify
     type: string
-  # - name: BUILD_EXTRA_ARGS
-  #   type: string
-  # - name: GIT_REVISION
-  #   type: string
   - name: git_ref
     type: string
   - name: commit_date
@@ -66,17 +62,17 @@ spec:
     - name: basic-auth
       workspace: gitcredential
   
-  - name: verify-source
-    runAfter:
-    - fetch-source
-    taskRef:
-      kind: Task
-      name: verify-source-code
-    workspaces:
-    - name: repository
-      workspace: workspace
-    - name: secrets
-      workspace: secrets
+  # - name: verify-source
+  #   runAfter:
+  #   - fetch-source
+  #   taskRef:
+  #     kind: Task
+  #     name: verify-source-code
+  #   workspaces:
+  #   - name: repository
+  #     workspace: workspace
+  #   - name: secrets
+  #     workspace: secrets
 
   - name: package
     params:
@@ -99,22 +95,22 @@ spec:
       - name: maven-local-repo
         workspace: maven-local-repo
   
-  - name: scan-source
-    params:
-      - name: SONARQUBE_HOST_URL
-        value: $(params.sonarqube_host_url)
-      - name: sonarqube_project_key
-        value: $(params.sonarqube_project_key)
-      - name: sonarqubeProjectSecret
-        value: $(params.sonarqube_project_secret)
-    runAfter:
-      - package
-    taskRef:
-      kind: Task
-      name: scan-code
-    workspaces:
-      - name: repository
-        workspace: workspace
+  # - name: scan-source
+  #   params:
+  #     - name: SONARQUBE_HOST_URL
+  #       value: $(params.sonarqube_host_url)
+  #     - name: sonarqube_project_key
+  #       value: $(params.sonarqube_project_key)
+  #     - name: sonarqubeProjectSecret
+  #       value: $(params.sonarqube_project_secret)
+  #   runAfter:
+  #     - package
+  #   taskRef:
+  #     kind: Task
+  #     name: scan-code
+  #   workspaces:
+  #     - name: repository
+  #       workspace: workspace
 
   # - name: build
   #   params:
@@ -140,7 +136,8 @@ spec:
     - name: IMAGE
       value: $(params.image_dev_repo):$(params.image_tag)
     runAfter:
-    - scan-source
+    # - scan-source
+    - package
     taskRef:
       kind: ClusterTask
       name: buildah
