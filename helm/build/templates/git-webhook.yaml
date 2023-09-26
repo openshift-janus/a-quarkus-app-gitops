@@ -9,7 +9,7 @@ spec:
   repositoryOwner: {{ .Values.build.git.repo_owner }}
   ownerType:  "organization"
   repositoryName: {{ .Values.build.git.repo_name }}
-  webhookURL: https://webhook-{{.Values.build.git.repo_name}}-el-{{ .Values.build.namespace }}.{{ .Values.build.cluster_subdomain }}
+  webhookURL: https://webhook-{{.Values.build.git.repo_name}}-el-{{ .Values.build.namespace }}.apps.{{ .Values.build.cluster_subdomain }}
   insecureSSL: true
   webhookSecret:
     name: {{.Values.build.git.repo_name}}-webhook
