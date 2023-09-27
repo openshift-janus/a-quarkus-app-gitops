@@ -153,7 +153,7 @@ spec:
     - name: rox_api_token
       value: rox-api-token
     - name: image
-      value: $(params.IMAGE_REPO):$(params.IMAGE_TAG)
+      value: $(params.image_dev_repo):$(params.image_tag)
     - name: insecure-skip-tls-verify
       value: "true"
     runAfter:
@@ -169,7 +169,7 @@ spec:
     - name: rox_api_token
       value: stackrox-secret
     - name: image
-      value: $(params.IMAGE_REPO):$(params.IMAGE_TAG)
+      value: $(params.image_dev_repo):$(params.image_tag)
     - name: insecure-skip-tls-verify
       value: "true"
     runAfter:
