@@ -80,7 +80,7 @@ spec:
           - name: cyclonedx_host_url
             value: $(tt.params.cyclonedx_host_url)
           - name: release_dev_configuration_filepath
-            value: {{ .Values.release.dev.dev.configuration_filepath }}
+            value: {{ .Values.release.dev.configuration_filepath }}
           - name: gitops_repo_url
             value: {{ .Values.build.git.gitops_repo_url }}
           - name: gitops_target_branch
