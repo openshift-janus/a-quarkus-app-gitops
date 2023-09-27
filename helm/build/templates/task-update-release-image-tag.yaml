@@ -51,3 +51,7 @@ spec:
       git add $(params.configuration_filepath)
       git commit -m "Automatically updated manifest to point to image tag $IMAGE_TAG"
       git push origin $(params.target-branch)
+  workspaces:
+  - description: A workspace containing a .gitconfig and .git-credentials file.
+    name: basic-auth
+    optional: true

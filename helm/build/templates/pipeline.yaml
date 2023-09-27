@@ -215,6 +215,9 @@ spec:
     taskRef:
       kind: Task
       name: update-release-image-tag
+    workspaces:
+    - name: basic-auth
+      workspace: gitcredential
 
   workspaces:
   - name: workspace
