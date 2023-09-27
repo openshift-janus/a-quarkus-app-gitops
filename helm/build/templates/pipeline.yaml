@@ -47,6 +47,10 @@ spec:
     type: string
   - name: release_dev_configuration_filepath
     type: string
+  - name: gitops_repo_url
+    type: string
+  - name: gitops_target_branch
+    type: string
 
   tasks:
   - name: fetch-source
