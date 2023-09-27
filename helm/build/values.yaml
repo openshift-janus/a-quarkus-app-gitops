@@ -6,7 +6,7 @@
 # helm variable follow patter xx_xx;
 
 build:
-  # static
+  # static - build namespace
   namespace: "a-quarkus-app-dev"
   #env
   cluster_subdomain: ""
@@ -16,23 +16,22 @@ build:
     source_repo_url: "https://github.com/openshift-janus/a-quarkus-app.git"
     source_git_revision: "main"
     gitops_repo_url: "https://github.com/openshift-janus/a-quarkus-app-gitops.git"
-    gitops_git_revision: main
+    gitops_target_branch: main
     repo_owner: openshift-janus
     repo_name: a-quarkus-app
   maven:
-    # pipeline
-    maven_mirror_url: ""
-    # pipeline
+  ##  env
     maven_builder_image: ""
-  sonarqube:
-    # pipeline
-    sonarqube_host_url: ""
-  cyclonedx:
-    # pipeline
-    cyclonedx_host_url: ""
-  image:
-    repo_url:
-    tag:
+  # image:
+  #   repo_url:
+  #   tag:
+
+# static
+release:
+  dev:
+    configuration_filepath: helm/app/values-dev.yaml
+  prod:
+    configuration_filepath: helm/app/values-prod.yaml
 
 # app:
 #   name: a-quarkus-app

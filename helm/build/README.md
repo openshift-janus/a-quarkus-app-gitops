@@ -29,5 +29,7 @@ spec:
     value: "http://sonarqube.sonarqube.svc:9000"
   - name: image_dev_repo
     value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
+  - name: cyclonedx_host_url
+    value: "https://cyclonedx-bom-repo-server-cyclonedx.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"
 EOF
 ```
