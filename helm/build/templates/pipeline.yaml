@@ -83,7 +83,8 @@ spec:
       - name: GOAL
         value: "package"
     runAfter:
-      - verify-source
+      # - verify-source
+      - fetch-source
     taskRef:
       kind: Task
       name: maven
