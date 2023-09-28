@@ -82,7 +82,7 @@ spec:
         #!/usr/bin/env sh
         set -x
         cd repository/"$(params.releaseHelmDir)"
-        helm template -f "$(params.releaseHelmValuesFilepath)" "$(params.releaseAppName)" . |tee "$(params.releaseAppName)"-deploy-manifest.yaml
+        helm template -f "$(params.releaseHelmValuesFilePath)" "$(params.releaseAppName)" . |tee "$(params.releaseAppName)"-deploy-manifest.yaml
 
 
     # - image: quay.io/wpernath/kustomize-ubi
