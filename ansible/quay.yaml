@@ -1,0 +1,202 @@
+---
+- name: Create quay Robot Accounts and Kubernetes Secrets
+  hosts: localhost
+  gather_facts: no
+  vars:
+    quay_route_url: ""
+    ci_namespace: ""
+    organizations:
+      - name: dev
+        robot_shortname: ci
+      - name: test
+        robot_shortname: ci
+      - name: prod
+        robot_shortname: ci
+    quay_bearer_token: ""  # Replace with your bearer token
+  tasks:
+    - name: Set quay_bearer_token by look up env 
+      set_fact:
+        # msg: "{{ lookup('env', 'QUAY_ACCESS_TOKEN')}}"
+        quay_bearer_token: "{{ lookup('env', 'QUAY_ACCESS_TOKEN')}}"
+    - name: Check if QUAY_ACCESS_TOKEN environment variable exists
+      assert:
+        that:
+          - quay_bearer_token != ""
+        fail_msg: "Please set variable QUAY_ACCESS_TOKEN"
+      tags: check_quay_access_token
+
+    - name: Create Organization 
+      uri:
+        url: "https://{{ quay_route_url }}/api/v1/organization/"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ quay_bearer_token }}"
+        body_format: json
+        body:
+          name: "{{item.name}}"
+        # body: '{"name": "{{item.name}}"}'
+        return_content: yes
+        status_code: 201
+      register: create_org_response
+      ignore_errors: yes
+      with_items: "{{ organizations }}"
+      tags:
+        - create_org
+
+    - name: Create repo
+      uri:
+        url: "https://{{ quay_route_url }}/api/v1/repository"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ quay_bearer_token }}"
+        body_format: json
+        body:
+          repository: "{{env.appname}}"
+          visibility: "private"
+          namespace: "{{item.name}}"
+          description: "image repo for {{env.appname}}"
+        # body: '{"name": "{{item.name}}"}'
+        return_content: yes
+        status_code: 201
+      register: create_repo_response
+      ignore_errors: yes
+      with_items: "{{ organizations }}"
+      tags:
+        - create_repo
+    # - name: debug
+    #   debug:
+    #     var: create_repo_response
+    #   tags:
+    #     - create_repo
+
+    - name: Create Organization Robot Account and Fetch Token
+      uri:
+        url: "https://{{ quay_route_url }}/api/v1/organization/{{ item.name }}/robots/{{ item.robot_shortname }}"
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ quay_bearer_token }}"
+        body: "{}"
+        status_code: 201
+      register: robot_account_response
+      ignore_errors: true
+      with_items: "{{ organizations }}"
+
+    - name: Grant repo permission
+      uri:
+        url: "https://{{ quay_route_url }}/api/v1/repository/{{item.name}}/{{env.appname}}/permissions/user/{{item.name}}+{{item.robot_shortname}}"
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ quay_bearer_token }}"
+        body_format: json
+        body: 
+          role: "write"
+        status_code: 200
+      register: grant_permission_response
+      with_items: "{{ organizations }}"
+      tags:
+        - grant_permission
+
+    - name: debug
+      debug:
+        var: robot_account_response
+      tags:
+        - robot_account_response
+    
+
+    #Deprecate, use list of dictionary instead
+    # - name: Extract Token from Response
+    #   set_fact:
+    #     robot_tokens: "{{ robot_tokens|default({}) | combine( {item.json.name: item.json.token} ) }}"
+    #   with_items: "{{ robot_account_response.results }}"
+
+    - name: Extract Tokens from Response and Store in List of Dictionaries
+      set_fact:
+        robot_tokens: "{{ robot_tokens|default([]) + [{'name': item.json.name, 'value': item.json.token}] }}"
+      with_items: "{{ robot_account_response.results }}"
+      when: not robot_account_response.failed
+    
+    # - name: Create Kubernetes Secret
+    #   k8s:
+    #     state: present
+    #     definition:
+    #       apiVersion: v1
+    #       kind: Secret
+    #       metadata:
+    #         name: "quay-robot-secret"
+    #         namespace: "{{env.appname}}-{{ item.name.split('+')[0] }}"
+    #       type: kubernetes.io/dockerconfigjson
+    #       data:
+    #         .dockerconfigjson: "{{ dockerconfigjson | regex_replace(\"'\", '\"') | b64encode }}"
+    #   with_items: "{{ robot_tokens }}"
+    #   vars:
+    #     my_auth: "{{ item.name }}:{{ item.value }}"
+    #     dockerconfigjson: |
+    #       {
+    #         "auths": {
+    #           "{{quay_route_url}}": {
+    #             "auth": "{{ my_auth | b64encode }}",
+    #             "email": ""
+    #           }
+    #         }
+    #       }
+
+    - name: Check if quay-robot-secret Secret exists
+      k8s_info:
+        kind: Secret
+        name: quay-robot-secret
+        namespace: "{{ ci_namespace }}"
+      register: quay_secret_info
+      ignore_errors: true
+
+    - name: Create Kubernetes Secret
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "quay-robot-secret"
+            namespace: "{{ ci_namespace }}"
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: "{{ dockerconfigjson | regex_replace(\"'\", '\"') | b64encode }}"
+      # with_items: "{{ robot_tokens }}"
+      vars:
+        my_auth: "{{ robot_tokens[0].name }}:{{ robot_tokens[0].value }}"
+        dockerconfigjson: |
+          {
+            "auths": {
+              "{{quay_route_url}}": {
+                "username": "{{ robot_tokens[0].name }}" ,
+                "password": " robot_tokens[0].value ",
+                "auth": "{{ my_auth | b64encode }}",
+                "email": ""
+              }
+            }
+          }
+      when: not quay_secret_info.resources
+
+- name: Patch ServiceAccount with quay-robot-secret
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Patch ServiceAccount
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: pipeline  # Replace with the name of your ServiceAccount
+            namespace: "{{ ci_namespace }}"
+          imagePullSecrets:
+            - name: quay-robot-secret
+          secrets:
+            - name: quay-robot-secret
+        merge_type: merge
+      tags:
+        - patch_serviceaccount

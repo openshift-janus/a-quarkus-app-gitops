@@ -1,0 +1,32 @@
+---
+
+- name: Create quay Robot Accounts and Kubernetes Secrets
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ci_namespace: ""
+  tasks:
+  # Get environment variables
+  - name: Set gpg_public_key by look up env 
+    set_fact:
+      # msg: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
+      gpg_public_key: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
+  - name: Check if GPG_PUBLIC_KEY environment variable exists
+    assert:
+      that:
+        - gpg_public_key != ""
+      fail_msg: "Please set variable GPG_PUBLIC_KEY using the following command export GPG_PUBLIC_KEY=$(gpg --armor --export yourgpgkey|base64) before proceeding with this playbook."
+    tags: check_gpg_public_key
+
+  - name: Create Kubernetes Secret
+    k8s:
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: gpg-public-key
+          namespace: "{{ ci_namespace }}"
+        data:
+          public.key: "{{ lookup('env', 'GPG_PUBLIC_KEY') }}"
+      state: present
+    when: gpg_public_key != ""

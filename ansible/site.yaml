@@ -12,22 +12,12 @@
 
 - name: Create Kubernetes Secret for GPG_PUBLIC_KEY
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
-    - name: Set gpg_public_key by look up env 
-      set_fact:
-        # msg: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
-        gpg_public_key: "{{ lookup('env', 'GPG_PUBLIC_KEY')}}"
-    - name: Check if GPG_PUBLIC_KEY environment variable exists
-      assert:
-        that:
-          - gpg_public_key != ""
-        fail_msg: "Please set variable GPG_PUBLIC_KEY using the following command export GPG_PUBLIC_KEY=$(gpg --armor --export yourgpgkey|base64) before proceeding with this playbook."
-      tags: check_gpg_public_key
 
 - name: Install a-quarkus-app CI pipeline via helm
   hosts: 'localhost'
-  gather_facts: no
+  gather_facts: false
   tasks:
   - name: Wait for ArgoCD to be Ready
     kubernetes.core.k8s_info:
@@ -126,7 +116,7 @@
 
 - name: Wait for Application's Kubernetes Namespace to Exist
   hosts: localhost
-  # gather_facts: no
+  # gather_facts: false
   tasks:
     - name: Check if the namespace exists
       # with_items: "{{ env }}"
@@ -148,23 +138,9 @@
       tags:
         - wait_namespace
 
-- name: Post configuration for create secret, triggerbinding etc
+- name: Fetch installed components info
   hosts: localhost
   tasks:
-  - name: Create Kubernetes Secret
-    k8s:
-      definition:
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: gpg-public-key
-          namespace: "{{env.appname}}-dev"
-        data:
-          public.key: "{{ lookup('env', 'GPG_PUBLIC_KEY') }}"
-      state: present
-    when: gpg_public_key != ""
-    tags: create_secret
-
   - name: Fetch Sonarqube OpenShift Route
     k8s_info:
       api_version: route.openshift.io/v1
@@ -174,6 +150,8 @@
         - app = sonarqube
     register: sonarqube_route_info
     ignore_errors: true
+    tags:
+      - fetch_info
 
   - name: Fail if route doesn't exist
     fail:
@@ -183,47 +161,8 @@
     set_fact:
       sonarqube_route_url: "{{ sonarqube_route_info.resources[0].status.ingress[0].host }}"
     when: sonarqube_route_info.resources
-  - name: Check if sonarqube_access_token Secret exists
-    k8s_info:
-      kind: Secret
-      name: sonarqube-access-token
-      namespace: "{{env.appname}}-dev"
-    register: secret_info
-    ignore_errors: true
-  
-  - name: debug
-    debug:
-      msg: "{{secret_info}}"
-
-  - name: Generate SonarQube Access Token
-    uri:
-      url: "https://{{sonarqube_route_url}}/api/user_tokens/generate?name=a_quarkus_app_project_token"
-      method: POST
-      user: "admin"
-      password: "admin"
-      force_basic_auth: true
-      status_code: 200
-      return_content: yes
-    register: token_response
-    when: not secret_info.resources
-
-  - name: Extract Token Value
-    set_fact:
-      token_value: "{{ token_response.json.token }}"
-    when: not secret_info.resources
-
-  - name: Create or Update sonarqube_access_token Secret
-    k8s:
-      definition:
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: sonarqube-access-token
-          namespace: "{{env.appname}}-dev"
-        data:
-          token: "{{ token_value | b64encode }}"
-      state: present
-    when: not secret_info.resources
+    tags:
+      - fetch_info
 
   - name: Fetch quay Route
     k8s_info:
@@ -233,7 +172,7 @@
       namespace: "{{ env.quaynamespace}}"
     register: route_info
     tags:
-      - quay_route
+      - fetch_info
 
     # - name: debug
     #   debug:
@@ -244,7 +183,41 @@
       quay_route_url: "{{ route_info.resources[0].status.ingress[0].host }}"
     when: route_info.resources
     tags:
-      - quay_route
+      - fetch_info
+
+  - name: Fetch cyclonedx Route
+    k8s_info:
+      api_version: route.openshift.io/v1
+      kind: Route
+      name: cyclonedx-bom-repo-server
+      namespace: "{{ env.cyclonedxnamespace}}"
+    register: cyclonedx_info
+    tags:
+      - fetch_info
+
+  - name: Extract cyclonedx Route URL
+    set_fact:
+      cyclonedx_route_url: "{{ cyclonedx_info.resources[0].status.ingress[0].host }}"
+    when: cyclonedx_info.resources
+    tags:
+      - fetch_info
+
+  - name: Fetch rhacs Route
+    k8s_info:
+      api_version: route.openshift.io/v1
+      kind: Route
+      name: central
+      namespace: "{{ env.rhacsnamespace}}"
+    register: rhacs_route_info
+    tags:
+      - fetch_info
+
+  - name: Extract rhacs Route URL
+    set_fact:
+      rhacs_route_url: "{{ rhacs_route_info.resources[0].status.ingress[0].host }}"
+    when: rhacs_route_info.resources
+    tags:
+      - fetch_info
 
   - name: Fetch Nexus Svc
     k8s_info:
@@ -254,21 +227,27 @@
       namespace: "{{ env.nexusnamespace}}"
     register: nexus_svc_info
     tags:
-      - nexus_svc_info
+      - fetch_info
+
   - name: debug
     debug:
       var: nexus_svc_info
     tags:
-      - nexus_svc_info
+      - fetch_info
 
-  - name: Extract quay Route URL
+  - name: Extract nexus svc URL
     set_fact:
       nexus_svc_url: "{{ nexus_svc_info.resources[0].metadata.name }}.{{env.nexusnamespace}}.svc"
       nexus_svc_port: "{{ nexus_svc_info.resources[0].spec.ports[0].port }}"
     when: nexus_svc_info.resources
     tags:
-      - nexus_svc_info
+      - fetch_info
 
+
+- name: Create TriggerBinding
+  hosts: localhost
+  gather_facts: false
+  tasks:
   - name: Create or Update TriggerBindings for your app
     k8s:
       definition:
@@ -288,78 +267,44 @@
           - name: tls_verify
             value: "true"
           - name: image_dev_repo
-            value: "https://{{ quay_route_url}}/develop/{{env.appname}}"
+            value: "{{ quay_route_url}}/dev/{{env.appname}}"
+          - name: cyclonedx_host_url
+            value: "https://{{cyclonedx_host_url}}"
+
       state: present
     tags:
       - triggerbinding
 
-- name: Create Quay.io Robot Accounts and Kubernetes Secrets
-  hosts: localhost
-  gather_facts: no
+- name: gpg configuration
+  import_playbook: gpg.yaml
   vars:
-    baseurl: "https://{{quay_route_url}}"
-    organizations:
-      # - name: develop
-      #   robot_shortname: ci
-      - name: test
-        robot_shortname: ci
-      # - name: prod
-      #   robot_shortname: ci
-    # Define your .dockerconfigjson content here
-    # dockerconfigjson: |
-    #   {
-    #     "auths": {
-    #       "https://{{quay_route_url}}" {
-    #         "auth": "{{ my_robot_name }}:{{ my_robot_token_base64 }}",
-    #         "email": ""
-    #       }
-    #     }
-    #   }
-  tasks:
-    - name: Create Organization Robot Account and Fetch Token
-      uri:
-        url: "{{ baseurl }}/api/v1/organization/{{ item.name }}/robots/{{ item.robot_shortname }}"
-        method: PUT
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        body: "{}"
-        status_code: 200
-      register: robot_account_response
-      with_items: "{{ organizations }}"
-    - name: debug    
-      debug:
-        var: robot_account_response 
+    ci_namespace: "{{env.appname}}-dev"
+  tags:
+    - gpg
 
-    - name: Extract Token from Response
-      set_fact:
-        robot_token: "{{ item.json.token }}"
-      with_items: "{{ robot_account_response.results }}"
-    
-    - name: Create Kubernetes Secret
-      k8s:
-        state: present
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: quay-robot-secret-{{ item.name }}
-            namespace: "{{env.appname}}-{{item.name}}"  # Replace with your desired namespace
-          type: kubernetes.io/dockerconfigjson
-          data:
-            .dockerconfigjson: "{{ dockerconfigjson | b64encode }}"
-      with_items: "{{ organizations }}"
-      vars:
-        my_robot_name: "{{ item.name }}+{{ item.robot_shortname }}"
-        dockerconfigjson: |
-          {
-            "auths": {
-              "{{baseurl}}": {
-                "auth": "{{ my_robot_name }}:{{ robot_token | b64encode }}",
-                "email": ""
-              }
-            }
-          }
-      # vars:
-      #   my_robot_name: "ci"  # Replace with your robot name
-      #   my_robot_token_base64: "{{ robot_token | b64encode }}"
+- name: sonarqube configuration
+  import_playbook: sonarqube.yaml
+  vars:
+    sonarqube_route_url: "{{sonarqube_route_url}}"
+    ci_namespace: "{{env.appname}}-dev"
+  tags:
+    - sonarqube
+
+- name: quay configuration
+  import_playbook: quay.yaml
+  vars:
+    quay_route_url: "{{quay_route_url}}"
+    ci_namespace: "{{env.appname}}-dev"
+  tags:
+    - quay
+
+- name: rhacs configuration
+  import_playbook: rhacs.yaml
+  vars:
+    rox_central_endpoint: "{{rhacs_route_url}}:443"
+    ci_namespace: "{{env.appname}}-dev"
+    quay_route_url: "{{quay_route_url}}"
+  tags:
+    - rhacs
+
+

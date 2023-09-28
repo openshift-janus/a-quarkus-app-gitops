@@ -6,4 +6,7 @@ env:
   sonarnamespace: "sonarqube"
   quaynamespace: "quay-enterprise"
   nexusnamespace: "nexus"
+  cyclonedxnamespace: "cyclonedx"
+  rhacsnamespace: "stackrox"
   maven_builder_image: "image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12" 
+  rhacsadminpassword: "admin123"

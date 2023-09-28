@@ -1,0 +1,133 @@
+---
+
+- name: Create secret for rox_api_token and rox_central_endpoint
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # rox_central_endpoint: "central.stackrox.svc:443"
+    rox_central_endpoint: ""
+    ci_namespace: ""
+    quay_route_url: ""
+    # quay_robot_name: "dev+ci"
+    # quay_robot_token: "1EUBESU1YJ54Y7D4B2KTSH8ULOD325H0966TDLFW4VTE7YYIP3COT12FV999YSN7"
+  tasks:
+    - name: Generate api token
+      uri:
+        url: "https://{{ rox_central_endpoint}}/v1/apitokens/generate"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Basic {{ ('admin:' + env.rhacsadminpassword) | b64encode }}"
+        body_format: json
+        body: 
+          name: "ci"
+          role: "Admin"
+        # body: '{"name": "{{item.name}}"}'
+        return_content: yes
+        status_code: 200
+        validate_certs: false
+      register: api_token_response
+      ignore_errors: yes
+
+    # - name: debug
+    #   debug:
+    #     var: api_token_response
+
+    - name: Extract Tokens from Response 
+      set_fact:
+        rox_api_token: "{{api_token_response.json.token}}"
+
+    - name: Create rox_api_token Kubernetes Secret
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "rox-api-token"
+            namespace: "{{ ci_namespace }}"
+          type: Opaque
+          data:
+            rox_api_token: "{{ rox_api_token | b64encode }}"
+
+    - name: Create rox_central_endpoint Kubernetes Secret
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "rox-central-endpoint"
+            namespace: "{{ ci_namespace }}"
+          type: Opaque
+          data:
+            rox_central_endpoint: "{{rox_central_endpoint | b64encode}}"
+      tags:
+        - central_endpoint_secret
+
+    # Create integration between rhacs and quay
+    - name: Retrieve Quay Robot Secret
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: quay-robot-secret
+        namespace: "{{ ci_namespace }}"  # Replace with the appropriate namespace
+      register: quay_robot_secret_info
+      ignore_errors: yes
+      tags:
+        - fetch_quay_robot_token
+
+    - name: Abort if Quay Robot Secret does not exist
+      fail:
+        msg: "Quay Robot Secret does not exist in namespace {{ ci_namespace }"
+      when: quay_robot_secret_info.failed
+      tags:
+        - fetch_quay_robot_token
+
+    - name: Extract Robot Token
+      set_fact:
+        quay_robot_secret_data: "{{ quay_robot_secret_info.resources[0].data }}"
+      tags:
+        - fetch_quay_robot_token
+    
+    - name: Parse .dockerconfigjson
+      set_fact:
+        dockerconfigjson: "{{ quay_robot_secret_data['.dockerconfigjson'] | b64decode | from_json}}"
+      tags:
+        - fetch_quay_robot_token
+    
+    - name: Extract Robot Token
+      set_fact:
+        quay_robot_token: "{{ dockerconfigjson.auths | json_query('*.[password]|[0][0]') }}"
+        quay_robot_username: "{{ dockerconfigjson.auths | json_query('*.[username][0][0]') }}"
+      tags:
+        - fetch_quay_robot_token
+    
+    - name: Display Robot Token
+      debug:
+        msg: "{{quay_robot_token}}"
+
+    - name: Generate quay integrations
+      uri:
+        url: "https://{{ rox_central_endpoint}}/v1/imageintegrations"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Basic {{ ('admin:' + env.rhacsadminpassword) | b64encode }}"
+        body_format: json
+        body: 
+          name: "local-quay1"
+          type: "quay"
+          categories: ["REGISTRY"]
+          quay:
+            endpoint: "https://{{ quay_route_url }}"
+            insecure: false
+            registryRobotCredentials:
+              username: "{{quay_robot_username}}"
+              password: "{{quay_robot_token}}"
+        # body: '{"name": "{{item.name}}"}'
+        return_content: yes
+        status_code: 200
+        validate_certs: false
+      register: quay_integration_response
+      ignore_errors: yes

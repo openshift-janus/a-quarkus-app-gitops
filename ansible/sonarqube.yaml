@@ -1,0 +1,50 @@
+---
+
+- name: Create secret for rox_api_token and rox_central_endpoint
+  hosts: localhost
+  gather_facts: false
+  vars:
+    sonarqube_route_url: ""
+    ci_namespace: ""
+  tasks:
+  - name: Check if sonarqube_access_token Secret exists
+    k8s_info:
+      kind: Secret
+      name: sonarqube-access-token
+      namespace: "{{ ci_namespace }}"
+    register: secret_info
+    ignore_errors: true
+  
+  - name: debug
+    debug:
+      msg: "{{secret_info}}"
+
+  - name: Generate SonarQube Access Token
+    uri:
+      url: "https://{{sonarqube_route_url}}/api/user_tokens/generate?name=a_quarkus_app_project_token"
+      method: POST
+      user: "admin"
+      password: "admin"
+      force_basic_auth: true
+      status_code: 200
+      return_content: yes
+    register: token_response
+    when: not secret_info.resources
+
+  - name: Extract Token Value
+    set_fact:
+      token_value: "{{ token_response.json.token }}"
+    when: not secret_info.resources
+
+  - name: Create or Update sonarqube_access_token Secret
+    k8s:
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: sonarqube-access-token
+          namespace: "{{ci_namespace}}"
+        data:
+          token: "{{ token_value | b64encode }}"
+      state: present
+    when: not secret_info.resources
