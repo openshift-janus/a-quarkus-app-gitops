@@ -33,11 +33,29 @@ spec:
         endpoint.  Defaults to `"false"`.
       name: insecure-skip-tls-verify
       type: string
+    - default: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:aa2599a70c14b4f30c9959f6ddafc2510180764d9464e6e2ec5f2147a0a0bf80
+      description: The image providing the git-init binary that this Task runs.
+      name: gitInitImage
+    - default: docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae
+      description: Specify a specific helm image
+      name: helmImage
+      type: string
+    - default: values.yaml
+      description: Specify Helm chart values yaml filepath
+      name: releaseHelmValuesFilePath
+      type: string
+    - default: "test"
+      description: Specify Release Deployed App name
+      name: releaseAppName
+      type: string
+    - description: Specify Release Helm Chart Dir
+      name: releaseHelmDir
+      type: string
   results:
     - description: Output of `roxctl deployment check`
       name: check_output
   steps:
-    - image: 'quay.io/redhat-gpte/alpine-git:latest'
+    - image: "$(params.gitInitImage)"
       name: git-checkout
       resources: {}
       script: |
@@ -50,46 +68,56 @@ spec:
           echo "**** Cloning $(params.gitRepositoryUrl) into $(pwd)/repository"
         fi
 
-        git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
-        cd repository
-        git checkout "$(params.gitRepositoryRevision)"
+        git clone -b "$(params.gitRepositoryRevision)" --single-branch "$(params.gitRepositoryUrl)" $(pwd)/repository
+        # cd repository
       volumeMounts:
         - mountPath: /workspace/repository
           name: repository
       workingDir: /workspace
-    - image: quay.io/wpernath/kustomize-ubi
-      name: kustomize-build
-      resources: {}
+
+    - image: "$(helmImage)"
+      name: helm-templating
+      resource: {}
       script: |
         #!/usr/bin/env sh
-
-        set -eu -o pipefail
-
-        cd repository/gitops/application/globex/overlays/dev
-
-        mkdir -p /workspace/repository/input
-        mkdir -p /workspace/repository/output
-
-        kustomize build . --output /workspace/repository/input/all.yaml
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace
-    - image: looztra/kubesplit
-      name: kustomize-split
-      resources: {}
-      script: >
-        #!/usr/bin/env sh
+        set -x
+        cd repository/"$(params.releaseHelmDir)"
+        helm template -f "$(params.releaseHelmValuesFilepath)" "$(params.releaseAppName)" . |tee "$(params.releaseAppName)"-deploy-manifest.yaml
 
 
-        set -eu -o pipefail
+    # - image: quay.io/wpernath/kustomize-ubi
+    #   name: kustomize-build
+    #   resources: {}
+    #   script: |
+    #     #!/usr/bin/env sh
 
-        kubesplit -i /workspace/repository/input/all.yaml -o
-        /workspace/repository/output
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace
+    #     set -eu -o pipefail
+
+    #     cd repository/gitops/application/globex/overlays/dev
+
+    #     mkdir -p /workspace/repository/input
+    #     mkdir -p /workspace/repository/output
+
+    #     kustomize build . --output /workspace/repository/input/all.yaml
+    #   volumeMounts:
+    #     - mountPath: /workspace/repository
+    #       name: repository
+    #   workingDir: /workspace
+    # - image: looztra/kubesplit
+    #   name: kustomize-split
+    #   resources: {}
+    #   script: >
+    #     #!/usr/bin/env sh
+
+
+    #     set -eu -o pipefail
+
+    #     kubesplit -i /workspace/repository/input/all.yaml -o
+    #     /workspace/repository/output
+    #   volumeMounts:
+    #     - mountPath: /workspace/repository
+    #       name: repository
+    #   workingDir: /workspace
     - env:
         - name: ROX_API_TOKEN
           valueFrom:
@@ -106,10 +134,9 @@ spec:
       resources: {}
       script: |
         #!/usr/bin/env bash
+        set -x
 
-        set +x
-
-        cd /workspace/repository/output
+        cd repository/"$(params.releaseHelmDir)"
 
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
           "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
@@ -118,7 +145,8 @@ spec:
 
         chmod +x ./roxctl  > /dev/null
 
-        DEPLOYMENT_FILE=$(ls -1a | grep *deployment--globex-ui.yml)
+        # DEPLOYMENT_FILE=$(ls -1a | grep *deployment--globex-ui.yml)
+        DEPLOYMENT_FILE="$(params.releaseAppName)"-deploy-manifest.yaml
 
         ./roxctl deployment check \
          $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \

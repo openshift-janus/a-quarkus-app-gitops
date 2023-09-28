@@ -1,0 +1,97 @@
+---
+# Source: a-quarkus-app/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-a-quarkus-app
+  labels:
+    helm.sh/chart: a-quarkus-app-0.1.0
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/version: "v1.0.0-CR2"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: a-quarkus-app/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-a-quarkus-app
+  labels:
+    helm.sh/chart: a-quarkus-app-0.1.0
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/version: "v1.0.0-CR2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/instance: test
+---
+# Source: a-quarkus-app/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-a-quarkus-app
+  annotations:
+    latest_image_version: "image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app:${IMAGE_TAG}"
+  labels:
+    helm.sh/chart: a-quarkus-app-0.1.0
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/version: "v1.0.0-CR2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: a-quarkus-app
+      app.kubernetes.io/instance: test
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: a-quarkus-app
+        app.kubernetes.io/instance: test
+    spec:
+      serviceAccountName: test-a-quarkus-app
+      securityContext:
+        {}
+      containers:
+        - name: a-quarkus-app
+          securityContext:
+            {}
+          image: "image-registry.openshift-image-registry.svc:5000/a-quarkus-app-dev/a-quarkus-app:${IMAGE_TAG}"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources:
+            {}
+---
+# Source: a-quarkus-app/templates/route.yaml
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+  labels:
+    helm.sh/chart: a-quarkus-app-0.1.0
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/version: "v1.0.0-CR2"
+    app.kubernetes.io/managed-by: Helm
+  name: test-a-quarkus-app
+spec:
+  path: /hello
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: test-a-quarkus-app
+  wildcardPolicy: None

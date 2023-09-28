@@ -7,6 +7,9 @@ spec:
   params:
   - name: source_repo_url
     description: source repo that contains the application code
+    default: '{{ .Values.build.git.source_repo_url }}'
+  - name: source_repo_name
+    description: source repo that contains the application code
     default: '{{ .Values.build.git.repo_name }}'
   - name: source_git_revision
     description: source branch to build from
@@ -38,7 +41,9 @@ spec:
 
   - name: cyclonedx_host_url
 
-  - name: release_dev_configuration_filepath
+  - name: release_dev_helm_dir
+
+  - name: release_dev_values_file
 
   - name: gitops_repo_url
 
@@ -52,7 +57,9 @@ spec:
       spec:
         params:
           - name: source_repo_url
-            value: $(tt.params.source_repo_url)
+            value: '{{ .Values.build.git.source_repo_url }}'
+          - name: source_repo_name
+            value: $(tt.params.repo_name)
           - name: source_git_revision
             value: $(tt.params.source_git_revision)
           - name: maven_mirror_url
@@ -79,8 +86,10 @@ spec:
             value: $(tt.params.git_ref)-$(tt.params.source_git_revision)
           - name: cyclonedx_host_url
             value: $(tt.params.cyclonedx_host_url)
-          - name: release_dev_configuration_filepath
-            value: {{ .Values.release.dev.configuration_filepath }}
+          - name: release_dev_helm_dir
+            value: {{ .Values.release.dev.helm_dir }}
+          - name: release_dev_values_file
+            value: {{ .Values.release.dev.values_file }}
           - name: gitops_repo_url
             value: {{ .Values.build.git.gitops_repo_url }}
           - name: gitops_target_branch

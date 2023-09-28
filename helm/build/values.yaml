@@ -29,9 +29,13 @@ build:
 # static
 release:
   dev:
-    configuration_filepath: helm/app/values-dev.yaml
+    helm_dir: "helm/app"
+    values_file: "values-dev.yaml"
+    # configuration_filepath: helm/app/values-dev.yaml
   prod:
-    configuration_filepath: helm/app/values-prod.yaml
+    helm_dir: "helm/app"
+    values_file: "values-prod.yaml"
+    # configuration_filepath: helm/app/values-prod.yaml
 
 # app:
 #   name: a-quarkus-app
