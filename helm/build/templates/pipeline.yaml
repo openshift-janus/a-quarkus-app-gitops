@@ -246,6 +246,9 @@ spec:
     taskRef:
       kind: Task
       name: acs-deploy-check
+    workspaces:
+    - name: basic-auth
+      workspace: gitcredential
 
   workspaces:
   - name: workspace
