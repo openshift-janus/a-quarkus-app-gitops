@@ -59,7 +59,7 @@ spec:
           - name: source_repo_url
             value: '{{ .Values.build.git.source_repo_url }}'
           - name: source_repo_name
-            value: $(tt.params.build.git.repo_name)
+            value: $( .Values.build.git.repo_name)
           - name: source_git_revision
             value: $(tt.params.source_git_revision)
           - name: maven_mirror_url
