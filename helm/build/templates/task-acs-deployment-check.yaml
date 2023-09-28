@@ -87,7 +87,7 @@ spec:
           name: repository
       workingDir: /workspace
 
-    - image: "$(helmImage)"
+    - image: "$(params.helmImage)"
       name: helm-templating
       resources: {}
       script: |
