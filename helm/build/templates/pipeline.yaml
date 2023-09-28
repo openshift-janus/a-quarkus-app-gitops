@@ -215,7 +215,7 @@ spec:
       value: $(params.gitops_target_branch)
     runAfter:
     # - acs-image-check
-    - generate-sbom
+    - acs-deploy-check
     taskRef:
       kind: Task
       name: update-release-image-tag
@@ -242,7 +242,7 @@ spec:
       - name: releaseHelmValuesFilePath
         value: '$(params.release_dev_values_file)'
     runAfter:
-      - update-dev-release-image-tag
+      - generate-bom
     taskRef:
       kind: Task
       name: acs-deploy-check
