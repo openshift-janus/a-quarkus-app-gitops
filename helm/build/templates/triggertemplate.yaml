@@ -23,8 +23,6 @@ spec:
 
   - name: tls_verify
     
-  # - name: BUILD_EXTRA_ARGS
-  #   
   - name: git_ref
     
   - name: commit_date

@@ -250,6 +250,20 @@ spec:
     - name: basic-auth
       workspace: gitcredential
 
+  - name: verify-tlog-signature
+    params:
+      - name: registrySecret
+        value: quay-robot-secret
+      - name: cosignSecret
+        value: cosign-secret
+      - name: image
+        value: $(params.image_dev_repo):$(params.image_tag)
+    runAfter:
+    - build
+    taskRef:
+      kind: Task
+      name: rekor-verify
+
   workspaces:
   - name: workspace
   - name: maven-settings
