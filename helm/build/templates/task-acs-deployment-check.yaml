@@ -77,7 +77,7 @@ spec:
 
     - image: "$(helmImage)"
       name: helm-templating
-      resource: {}
+      resources: {}
       script: |
         #!/usr/bin/env sh
         set -x
