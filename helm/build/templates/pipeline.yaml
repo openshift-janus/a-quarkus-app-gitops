@@ -242,7 +242,7 @@ spec:
       - name: releaseHelmValuesFilePath
         value: '$(params.release_dev_values_file)'
     runAfter:
-      - generate-bom
+      - generate-sbom
     taskRef:
       kind: Task
       name: acs-deploy-check
