@@ -33,7 +33,8 @@ spec:
         endpoint.  Defaults to `"false"`.
       name: insecure-skip-tls-verify
       type: string
-    - default: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:aa2599a70c14b4f30c9959f6ddafc2510180764d9464e6e2ec5f2147a0a0bf80
+    # - default: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:aa2599a70c14b4f30c9959f6ddafc2510180764d9464e6e2ec5f2147a0a0bf80
+    - default: alpine/git:latest
       description: The image providing the git-init binary that this Task runs.
       name: gitInitImage
     - default: docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae
