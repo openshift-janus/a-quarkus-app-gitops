@@ -49,7 +49,7 @@ spec:
     type: string
   - name: release_dev_helm_dir
     type: string
-  - name: release_dev_value_file
+  - name: release_dev_values_file
     type: string
   - name: gitops_repo_url
     type: string
@@ -208,7 +208,7 @@ spec:
     - name: image_tag
       value: $(params.image_tag)
     - name: configuration_filepath
-      value: $(params.release_dev_helm_dir)/$(params.release_dev_helm_values_file)
+      value: $(params.release_dev_helm_dir)/$(params.release_dev_values_file)
     - name: repository
       value: $(params.gitops_repo_url)
     - name: target-branch
@@ -240,7 +240,7 @@ spec:
       - name: releaseAppName
         value: '$(params.source_repo_name)'
       - name: releaseHelmValuesFilePath
-        value: '$(params.release_dev_helm_values_file)'
+        value: '$(params.release_dev_values_file)'
     runAfter:
       - update-dev-release-image-tag
     taskRef:
