@@ -27,7 +27,9 @@ spec:
   - description: Repo in which the image configuration is stored.
     name: repository
     type: string
-  - default: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:aa2599a70c14b4f30c9959f6ddafc2510180764d9464e6e2ec5f2147a0a0bf80
+  - default: alpine/git:latest
+  #Todo fix this later
+  # - default: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:aa2599a70c14b4f30c9959f6ddafc2510180764d9464e6e2ec5f2147a0a0bf80
     description: The image providing the git-init binary that this Task runs.
     name: gitInitImage
   steps:
