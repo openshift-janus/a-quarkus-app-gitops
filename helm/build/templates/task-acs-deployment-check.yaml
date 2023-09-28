@@ -62,7 +62,7 @@ spec:
       script: |
         #!/usr/bin/env sh
 
-        set -eu -o pipefail
+        # set -eu -o pipefail
 
         if [[ "$(params.verbose)" == "true" ]] ; then
           set -x
@@ -84,6 +84,10 @@ spec:
         set -x
         cd repository/"$(params.releaseHelmDir)"
         helm template -f "$(params.releaseHelmValuesFilePath)" "$(params.releaseAppName)" . |tee "$(params.releaseAppName)"-deploy-manifest.yaml
+      volumeMounts:
+        - mountPath: /workspace/repository
+          name: repository
+      workingDir: /workspace
 
 
     # - image: quay.io/wpernath/kustomize-ubi
