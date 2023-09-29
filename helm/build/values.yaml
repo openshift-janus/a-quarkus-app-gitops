@@ -31,45 +31,9 @@ release:
   dev:
     helm_dir: "helm/app"
     values_file: "values-dev.yaml"
-    # configuration_filepath: helm/app/values-dev.yaml
+  test:
+    helm_dir: "helm/app"
+    values_file: "values-test.yaml"
   prod:
     helm_dir: "helm/app"
     values_file: "values-prod.yaml"
-    # configuration_filepath: helm/app/values-prod.yaml
-
-# app:
-#   name: a-quarkus-app
-#   namespace: a-quarkus-app-dev
-#   #TODO not hard code env variable here
-#   cluster: ".apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com"
-#   image_dev_repo: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/develop/a-quarkus-app"
-#   sonarHostUrl: ""
-#   nexusHostUrl: ""
-#   rhacsHostUrl: ""
-#   cyclonedxHostUrl: ""
-#   mavenImage: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-17:1.12
-
-# git:
-#   branch: main
-#   repo: https://github.com/openshift-janus/a-quarkus-app
-#   org: openshift-janus
-#   name: a-quarkus-app
-#   manifestRepo: ""
-#   manifestFileProd: ""
-#   manifestRepoName: ""
-
-# devops:
-#   branch: main
-#   repo: https://github.com/openshift-janus/a-quarkus-app-gitops
-#   org: openshift-janus
-#   name: a-quarkus-app-gitops
-#   #the repo contains a typo quarkus instead of quarkus
-#   filepath: /workspace/output/a-quarkus-app-gitops/helm/app/values-dev.yaml
-#   #For demo purpose only, release tag should be generated automatically
-#   release_tag: v1.0.0-CR3
-
-# image:
-#   host: image-registry.openshift-image-registry.svc:5000
-#   name: a-quarkus-app-dev/a-quarkus-app
-#   tag: latest
-

@@ -4,7 +4,7 @@ metadata:
   name: rekor-verify
 spec:
   params:
-    - default: image-registry-secret
+    - default: quay-robot-secret
       name: registrySecret
       type: string
     - default: cosign-secret
@@ -28,7 +28,8 @@ spec:
       name: cosign-verify-image
       resources: {}
       script: >
-        set -x
+        # set -x
+
         echo "${REGISTRY_SECRET}" > /home/cosign/.docker/config.json
 
         echo "${COSIGN_PUBLIC_KEY}" > /workspace/cosign.pub

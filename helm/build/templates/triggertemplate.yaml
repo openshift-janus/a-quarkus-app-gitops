@@ -19,7 +19,6 @@ spec:
   - name: sonarqube_project_key
     
   - name: sonarqube_project_secret
-    
 
   - name: tls_verify
     
@@ -32,6 +31,8 @@ spec:
   - name: commit_message
     
   - name: image_dev_repo
+
+  - name: image_test_repo
     
   - name: image_tag
 
@@ -40,6 +41,10 @@ spec:
   - name: release_dev_helm_dir
 
   - name: release_dev_values_file
+
+  - name: release_test_helm_dir
+
+  - name: release_test_values_file
 
   - name: gitops_repo_url
 
@@ -78,6 +83,8 @@ spec:
             value: $(tt.params.commit_message)
           - name: image_dev_repo
             value: $(tt.params.image_dev_repo)
+          - name: image_test_repo
+            value: $(tt.params.image_test_repo)
           - name: image_tag
             value: $(tt.params.git_ref)-$(tt.params.source_git_revision)
           - name: cyclonedx_host_url
@@ -86,6 +93,10 @@ spec:
             value: {{ .Values.release.dev.helm_dir }}
           - name: release_dev_values_file
             value: {{ .Values.release.dev.values_file }}
+          - name: release_test_helm_dir
+            value: {{ .Values.release.prod.helm_dir }}
+          - name: release_test_values_file
+            value: {{ .Values.release.prod.values_file }}
           - name: gitops_repo_url
             value: {{ .Values.build.git.gitops_repo_url }}
           - name: gitops_target_branch

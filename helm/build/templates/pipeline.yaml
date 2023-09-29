@@ -43,6 +43,8 @@ spec:
     type: string
   - name: image_dev_repo
     type: string
+  - name: image_test_repo
+    type: string
   - name: image_tag
     type: string
   - name: cyclonedx_host_url
@@ -50,6 +52,10 @@ spec:
   - name: release_dev_helm_dir
     type: string
   - name: release_dev_values_file
+    type: string
+  - name: release_test_helm_dir
+    type: string
+  - name: release_test_values_file
     type: string
   - name: gitops_repo_url
     type: string
@@ -263,6 +269,52 @@ spec:
     taskRef:
       kind: Task
       name: rekor-verify
+
+  - name: create-test-release-branch
+    params:
+    - name: image
+      value: $(params.image_test_repo):$(params.image_tag)
+    - name: configuration_file
+      value: $(params.release_test_helm_dir)/$(params.release_dev_values_file)
+    - name: repository
+      value: $(params.gitops_repo_url)
+    - name: target-branch
+      value: feature-for-$(params.commit_sha)
+    runAfter:
+    - acs-deploy-check
+    - verify-tlog-signature
+    taskRef:
+      kind: Task
+      name: create-pr-release-branch
+    workspaces:
+    - name: basic-auth
+      workspace: gitcredential
+
+  - name: issue-test-pull-request
+    params:
+    # - name: GITHUB_HOST_URL
+    #   value: $(params.REPO_HOST)
+    # - name: API_PATH_PREFIX
+    #   value: /api/v1
+    - name: RELEASE_ENV
+      value: test
+    - name: GITHUB_TOKEN_SECRET_NAME
+      value: '$(params.source_repo_name)'-github-pat
+    - name: REPO_FULL_NAME
+      value: '$(params.source_repo_name)'-gitops
+    - name: HEAD
+      value: feature-for-$(params.commit_sha)
+    - name: BASE
+      value: main
+    - name: BODY
+      value: Update prod image for $(params.commit_msg)
+    - name: TITLE
+      value: 'Production update: $(params.commit_msg)'
+    runAfter:
+    - create-test-release-branch
+    taskRef:
+      kind: Task
+      name: github-open-pull-request
 
   workspaces:
   - name: workspace
