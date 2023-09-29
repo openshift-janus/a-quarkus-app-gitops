@@ -56,7 +56,7 @@ spec:
       # Notice the enclosing " to keep it as a string in the resulting YAML.
       IMAGE_TAG=\"$(params.image_tag)\"
 
-      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_file)
+      sed -i "s/^  tag: .*/  tag: ${IMAGE_TAG}/" $(params.configuration_file)
 
       git add $(params.configuration_file)
       git commit -m "Automatically updated manifest to point to image tag $IMAGE_TAG"
