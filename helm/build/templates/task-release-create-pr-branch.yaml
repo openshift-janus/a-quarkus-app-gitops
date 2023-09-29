@@ -59,7 +59,7 @@ spec:
       sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_filepath)
 
       git add $(params.configuration_file)
-      git commit -m "Automatically updated manifest to point to image tag $IMAGE"
+      git commit -m "Automatically updated manifest to point to image tag $IMAGE_TAG"
       git push origin $(params.pr-branch)
   workspaces:
   - description: A workspace containing a .gitconfig and .git-credentials file.
