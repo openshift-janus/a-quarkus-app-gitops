@@ -9,6 +9,10 @@ spec:
     description: source repo that contains the application code
   - name: source_repo_name
     description: source repo that contains the application code
+
+  - name: source_repo_owner
+    description: source repo owner or organization depending how you call it
+
   - name: source_git_revision
     description: source branch to build from
     
@@ -61,6 +65,8 @@ spec:
             value: "{{ .Values.build.git.source_repo_url }}"
           - name: source_repo_name
             value: "{{ .Values.build.git.repo_name }}"
+          - name: source_repo_name
+            value: "{{ .Values.build.git.repo_owner }}"
           - name: source_git_revision
             value: $(tt.params.source_git_revision)
           - name: maven_mirror_url
@@ -94,9 +100,9 @@ spec:
           - name: release_dev_values_file
             value: {{ .Values.release.dev.values_file }}
           - name: release_test_helm_dir
-            value: {{ .Values.release.prod.helm_dir }}
+            value: {{ .Values.release.test.helm_dir }}
           - name: release_test_values_file
-            value: {{ .Values.release.prod.values_file }}
+            value: {{ .Values.release.test.values_file }}
           - name: gitops_repo_url
             value: {{ .Values.build.git.gitops_repo_url }}
           - name: gitops_target_branch

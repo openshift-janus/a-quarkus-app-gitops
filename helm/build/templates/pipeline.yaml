@@ -17,6 +17,9 @@ spec:
   - name: source_repo_name
     description: source repo name
     type: string
+  - name: source_repo_owner
+    description: source repo organization name
+    type: string
   - name: source_git_revision
     description: source branch to build from
     type: string
@@ -304,7 +307,7 @@ spec:
     - name: GITHUB_TOKEN_SECRET_NAME
       value: '$(params.source_repo_name)-github-pat'
     - name: REPO_FULL_NAME
-      value: '$(params.source_repo_name)-gitops'
+      value: '$(params.source_repo_owner)/$(params.source_repo_name)-gitops'
     - name: HEAD
       value: feature-for-$(params.source_git_revision)
     - name: BASE
