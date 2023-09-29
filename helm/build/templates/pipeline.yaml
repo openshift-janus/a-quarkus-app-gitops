@@ -214,7 +214,7 @@ spec:
     params:
     - name: image_tag
       value: $(params.image_tag)
-    - name: configuration_filepath
+    - name: configuration_file
       value: $(params.release_dev_helm_dir)/$(params.release_dev_values_file)
     - name: repository
       value: $(params.gitops_repo_url)

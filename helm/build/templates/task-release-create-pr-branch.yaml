@@ -48,7 +48,7 @@ spec:
       TMPDIR=$(mktemp -d)
 
       cd $TMPDIR
-      git clone -b $(params.target-branch) $(params.repository) source
+      git clone -b $(params.target-branch) --single-branch $(params.repository) source
       cd source
       git checkout -b $(params.pr-branch)
 
@@ -56,7 +56,7 @@ spec:
       # Notice the enclosing " to keep it as a string in the resulting YAML.
       IMAGE_TAG=\"$(params.image_tag)\"
 
-      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_filepath)
+      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_file)
 
       git add $(params.configuration_file)
       git commit -m "Automatically updated manifest to point to image tag $IMAGE_TAG"

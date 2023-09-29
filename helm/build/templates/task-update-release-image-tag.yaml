@@ -22,7 +22,7 @@ spec:
     name: git_user_email
     type: string
   - description: File in which the image configuration is stored.
-    name: configuration_filepath
+    name: configuration_file
     type: string
   - description: Repo in which the image configuration is stored.
     name: repository
@@ -58,9 +58,9 @@ spec:
       # Notice the enclosing " to keep it as a string in the resulting YAML.
       IMAGE_TAG=\"$(params.image_tag)\"
 
-      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_filepath)
+      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_file)
 
-      git add $(params.configuration_filepath)
+      git add $(params.configuration_file)
       git commit -m "Automatically updated manifest to point to image tag $IMAGE_TAG"
       git push origin $(params.target-branch)
   workspaces:
