@@ -57,6 +57,7 @@ spec:
     type: string
   - name: release_test_values_file
     type: string
+
   - name: gitops_repo_url
     type: string
   - name: gitops_target_branch
@@ -270,15 +271,17 @@ spec:
       kind: Task
       name: rekor-verify
 
-  - name: create-test-release-branch
+  - name: release-create-test-release-pr-branch
     params:
-    - name: image
-      value: $(params.image_test_repo):$(params.image_tag)
+    - name: image_tag
+      value: $(params.image_tag)
     - name: configuration_file
       value: $(params.release_test_helm_dir)/$(params.release_dev_values_file)
     - name: repository
       value: $(params.gitops_repo_url)
     - name: target-branch
+      value: $(params.gitops_target_branch)
+    - name: pr-branch
       value: feature-for-$(params.source_git_revision)
     runAfter:
     - acs-deploy-check
@@ -311,7 +314,7 @@ spec:
     - name: TITLE
       value: 'Update: $(params.commit_message)'
     runAfter:
-    - create-test-release-branch
+    - release-create-test-release-pr-branch
     taskRef:
       kind: Task
       name: github-open-pull-request

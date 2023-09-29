@@ -7,11 +7,14 @@ spec:
     with the short commit.
   params:
   - description: Used to tag the built image.
-    name: image
+    name: image_tag
     type: string
   - default: main
     description: Target branch to push to
     name: target-branch
+    type: string
+  - description: feature Branch for PR 
+    name: pr-branch
     type: string
   - default: Tekton Pipeline
     description: Git user name for performing the push operation.
@@ -45,19 +48,19 @@ spec:
       TMPDIR=$(mktemp -d)
 
       cd $TMPDIR
-      git clone $(params.repository)
-      cd securing-software-supply-chain
-      git checkout -b $(params.target-branch)
+      git clone -b $(params.target-branch) $(params.repository) source
+      cd source
+      git checkout -b $(params.pr-branch)
 
       # Set to the short commit value passed as parameter.
       # Notice the enclosing " to keep it as a string in the resulting YAML.
-      IMAGE=\"$(params.image)\"
+      IMAGE=\"$(params.image_tag)\"
 
-      sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" $(params.configuration_file)
+      sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_filepath)
 
       git add $(params.configuration_file)
       git commit -m "Automatically updated manifest to point to image tag $IMAGE"
-      git push origin $(params.target-branch)
+      git push origin $(params.pr-branch)
   workspaces:
   - description: A workspace containing a .gitconfig and .git-credentials file.
     name: basic-auth
