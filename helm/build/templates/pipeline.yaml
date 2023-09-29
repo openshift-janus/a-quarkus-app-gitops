@@ -159,8 +159,8 @@ spec:
     - name: IMAGE
       value: $(params.image_repo):$(params.image_tag)
     runAfter:
-    # - scan-source
-    - package
+    - scan-source
+    # - package
     taskRef:
       kind: ClusterTask
       name: buildah
