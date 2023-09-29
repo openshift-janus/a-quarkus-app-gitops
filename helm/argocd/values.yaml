@@ -22,11 +22,17 @@ dev:
   destination:
     server: 
     namespace: 
+  image:
+    repository: ""
 test:
   destination:
     server: 
     namespace: 
+  image:
+    repository: ""
 prod:
   destination:
     server: 
     namespace: 
+  image:
+    repository: ""

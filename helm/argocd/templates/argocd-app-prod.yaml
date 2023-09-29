@@ -15,6 +15,9 @@ spec:
     helm:
       valueFiles:
         - values-prod.yaml
+      parameters:
+        - name: image.repository
+          value: "{{ .Values.prod.image.repository }}"
   destination:
     server: {{ .Values.prod.destination.server }}
     namespace: {{ .Values.prod.destination.namespace }}

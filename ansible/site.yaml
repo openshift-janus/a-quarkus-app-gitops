@@ -10,134 +10,6 @@
     set_fact:
       cluster_host: "{{ cluster_response.stdout }}"
 
-- name: Create Kubernetes Secret for GPG_PUBLIC_KEY
-  hosts: localhost
-  gather_facts: false
-  tasks:
-
-- name: Install a-quarkus-app CI pipeline via helm
-  hosts: 'localhost'
-  gather_facts: false
-  tasks:
-  - name: Wait for ArgoCD to be Ready
-    kubernetes.core.k8s_info:
-      api_version: argoproj.io/v1alpha1
-      kind: ApplicationSet
-    register: cm_crd
-    until: cm_crd.api_found == true
-    retries: 40
-    delay: 5
-
-  # Add private repo to argocd
-  - name: Fetch ArgoCD admin password from Kubernetes Secret
-    k8s_info:
-      api_version: v1
-      kind: Secret
-      name: argocd-cluster
-      namespace: "{{env.gitopsnamespace}}"
-    register: secret_info
-    tags:
-      - add_private_repo
-  # - name: debug
-  #   debug:
-  #     msg: {{secret_info}}
-  - name: Set ArgoCD admin password
-    set_fact:
-      argocd_password: "{{ secret_info.resources[0].data['admin.password'] | b64decode }}"
-    when: secret_info.resources | length > 0
-    tags:
-      - add_private_repo
-
-  - name: Fail if ArgoCD admin password retrieval fails
-    fail:
-      msg: "Failed to retrieve ArgoCD admin password from Kubernetes Secret."
-    when: secret_info.resources | length == 0
-    tags:
-      - add_private_repo
-
-  - name: Fetch argocd Route
-    # with_items: "{{ env }}"
-    k8s_info:
-      api_version: route.openshift.io/v1
-      kind: Route
-      name: argocd-server
-      namespace: "{{env.gitopsnamespace}}"
-      # label_selectors: 
-      #   - app.kubernetes.io/name = argocd-server
-    register: route_info
-    tags:
-      - add_private_repo
-    # ignore_errors: yes
-
-  - name: Extract argocd Route URL
-    set_fact:
-      argocd_route_url: "{{ route_info.resources[0].status.ingress[0].host }}"
-    when: route_info.resources
-    tags:
-      - add_private_repo
-
-  - name: Log in to ArgoCD and add private GitHub repo
-    # with_items: "{{ env }}"
-    shell: |
-      argocd login {{ argocd_route_url }} --username=admin --password={{ argocd_password }} --insecure --grpc-web
-      argocd repo add https://github.com/{{ env.githubrganization }}/{{env.appname}}-gitops.git --username {{ lookup('env', 'SCM_USERNAME') }} --password {{ lookup('env', 'SCM_PAT') }}
-    tags:
-      - add_private_repo
-
-  - name: Apply ApplicationSet for a-quarkus-app pipeline Deployment
-    # with_items: "{{ env }}"
-    kubernetes.core.helm:
-      state: present
-      name: applicationset
-      namespace: "{{ env.gitopsnamespace }}"
-      chart_ref: ../helm/applicationset
-      values:
-          applicationset:
-            namespace: "{{env.gitopsnamespace}}"
-          helm_params:
-            argocd:
-              namespace: "{{env.gitopsnamespace}}"
-            build:
-              cluster_subdomain: "{{ cluster_host[1:] }}"
-              maven:
-                maven_builder_image: "{{env.maven_builder_image}}"
-            dev:
-              destination:
-                server: "https://kubernetes.default.svc"
-                namespace: "{{env.appname}}-dev"
-            test:
-              destination:
-                server: "https://kubernetes.default.svc"
-                namespace: "{{env.appname}}-test"
-            prod:
-              destination:
-                server: "https://kubernetes.default.svc"
-                namespace: "{{env.appname}}-prod"
-
-- name: Wait for Application's Kubernetes Namespace to Exist
-  hosts: localhost
-  # gather_facts: false
-  tasks:
-    - name: Check if the namespace exists
-      # with_items: "{{ env }}"
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: Namespace
-        name: "{{env.appname}}-dev"
-      register: namespace_info
-      until: namespace_info.resources
-      retries: 60
-      delay: 5
-      tags:
-        - wait_namespace
-
-    - name: Debug Namespace Info
-      debug:
-        # msg: "{{namespace_info.resources}}" 
-        var: namespace_info
-      tags:
-        - wait_namespace
-
 - name: Fetch installed components info
   hosts: localhost
   tasks:
@@ -243,6 +115,135 @@
     tags:
       - fetch_info
 
+  # Add private repo to argocd
+  - name: Fetch ArgoCD admin password from Kubernetes Secret
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      name: argocd-cluster
+      namespace: "{{env.gitopsnamespace}}"
+    register: secret_info
+    tags:
+      - add_private_repo
+  # - name: debug
+  #   debug:
+  #     msg: {{secret_info}}
+  - name: Set ArgoCD admin password
+    set_fact:
+      argocd_password: "{{ secret_info.resources[0].data['admin.password'] | b64decode }}"
+    when: secret_info.resources | length > 0
+    tags:
+      - add_private_repo
+
+  - name: Fail if ArgoCD admin password retrieval fails
+    fail:
+      msg: "Failed to retrieve ArgoCD admin password from Kubernetes Secret."
+    when: secret_info.resources | length == 0
+    tags:
+      - add_private_repo
+
+  - name: Fetch argocd Route
+    # with_items: "{{ env }}"
+    k8s_info:
+      api_version: route.openshift.io/v1
+      kind: Route
+      name: argocd-server
+      namespace: "{{env.gitopsnamespace}}"
+      # label_selectors: 
+      #   - app.kubernetes.io/name = argocd-server
+    register: route_info
+    tags:
+      - add_private_repo
+    # ignore_errors: yes
+
+  - name: Extract argocd Route URL
+    set_fact:
+      argocd_route_url: "{{ route_info.resources[0].status.ingress[0].host }}"
+    when: route_info.resources
+    tags:
+      - add_private_repo
+
+- name: Install a-quarkus-app CI pipeline via helm
+  hosts: 'localhost'
+  gather_facts: false
+  tasks:
+  - name: Wait for ArgoCD to be Ready
+    kubernetes.core.k8s_info:
+      api_version: argoproj.io/v1alpha1
+      kind: ApplicationSet
+    register: cm_crd
+    until: cm_crd.api_found == true
+    retries: 40
+    delay: 5
+
+  - name: Log in to ArgoCD and add private GitHub repo
+    # with_items: "{{ env }}"
+    shell: |
+      argocd login {{ argocd_route_url }} --username=admin --password={{ argocd_password }} --insecure --grpc-web
+      argocd repo add https://github.com/{{ env.githubrganization }}/{{env.appname}}-gitops.git --username {{ lookup('env', 'SCM_USERNAME') }} --password {{ lookup('env', 'SCM_PAT') }}
+    tags:
+      - add_private_repo
+
+  - name: Apply ApplicationSet for a-quarkus-app pipeline Deployment
+    # with_items: "{{ env }}"
+    kubernetes.core.helm:
+      state: present
+      name: applicationset
+      namespace: "{{ env.gitopsnamespace }}"
+      chart_ref: ../helm/applicationset
+      values:
+          applicationset:
+            namespace: "{{env.gitopsnamespace}}"
+          helm_params:
+            argocd:
+              namespace: "{{env.gitopsnamespace}}"
+            build:
+              cluster_subdomain: "{{ cluster_host[1:] }}"
+              maven:
+                maven_builder_image: "{{env.maven_builder_image}}"
+
+            dev:
+              destination:
+                server: "https://kubernetes.default.svc"
+                namespace: "{{env.appname}}-dev"
+              image:
+                repository: "{{ quay_route_url }}/dev/{{env.appname}}"
+            test:
+              destination:
+                server: "https://kubernetes.default.svc"
+                namespace: "{{env.appname}}-test"
+                repository: "{{ quay_route_url }}/test/{{env.appname}}"
+            prod:
+              destination:
+                server: "https://kubernetes.default.svc"
+                namespace: "{{env.appname}}-prod"
+                repository: "{{ quay_route_url }}/prod/{{env.appname}}"
+              image:
+                repository: ""
+
+- name: Wait for Application's Kubernetes Namespace to Exist
+  hosts: localhost
+  # gather_facts: false
+  tasks:
+    - name: Check if the namespace exists
+      # with_items: "{{ env }}"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Namespace
+        name: "{{env.appname}}-dev"
+      register: namespace_info
+      until: namespace_info.resources
+      retries: 60
+      delay: 5
+      tags:
+        - wait_namespace
+
+    - name: Debug Namespace Info
+      debug:
+        # msg: "{{namespace_info.resources}}" 
+        var: namespace_info
+      tags:
+        - wait_namespace
 
 - name: Create TriggerBinding
   hosts: localhost
@@ -266,10 +267,11 @@
             value: "https://{{sonarqube_route_url}}"
           - name: tls_verify
             value: "true"
-          - name: image_dev_repo
-            value: "{{ quay_route_url}}/dev/{{env.appname}}"
+          # # TODO: This is required
+          # - name: image_dev_repo
+          #   value: "{{ quay_route_url}}/dev/{{env.appname}}"
           - name: cyclonedx_host_url
-            value: "https://{{cyclonedx_host_url}}"
+            value: "https://{{cyclonedx_route_url}}"
 
       state: present
     tags:

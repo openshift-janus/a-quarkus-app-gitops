@@ -31,14 +31,20 @@ spec:
               value: "{{ .Values.helm_params.dev.destination.server}}"
             - name: dev.destination.namespace
               value: "{{ .Values.helm_params.dev.destination.namespace}}"
+            - name: dev.release.image.repository
+              value: "{{ .Values.helm_params.dev.image.repository }}"
             - name: test.destination.server
               value: "{{ .Values.helm_params.test.destination.server}}"
             - name: test.destination.namespace
               value: "{{ .Values.helm_params.test.destination.namespace}}"
+            - name: test.release.image.repository
+              value: "{{ .Values.helm_params.test.image.repository }}"
             - name: prod.destination.server
               value: "{{ .Values.helm_params.prod.destination.server}}"
             - name: prod.destination.namespace
               value: "{{ .Values.helm_params.prod.destination.namespace}}"
+            - name: prod.release.image.repository
+              value: "{{ .Values.helm_params.prod.image.repository }}"
       destination:
         server: '{{"{{"}}cluster.server{{"}}"}}'
         namespace: "{{ .Values.applicationset.namespace }}"
