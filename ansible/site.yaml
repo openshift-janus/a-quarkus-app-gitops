@@ -201,7 +201,10 @@
               cluster_subdomain: "{{ cluster_host[1:] }}"
               maven:
                 maven_builder_image: "{{env.maven_builder_image}}"
-
+              # This build image.repository will reuse the dev.image.repository 
+              # so no need to redefine them
+              # image:
+              #   repository:
             dev:
               destination:
                 server: "https://kubernetes.default.svc"
@@ -212,14 +215,14 @@
               destination:
                 server: "https://kubernetes.default.svc"
                 namespace: "{{env.appname}}-test"
+              image:
                 repository: "{{ quay_route_url }}/test/{{env.appname}}"
             prod:
               destination:
                 server: "https://kubernetes.default.svc"
                 namespace: "{{env.appname}}-prod"
-                repository: "{{ quay_route_url }}/prod/{{env.appname}}"
               image:
-                repository: ""
+                repository: "{{ quay_route_url }}/prod/{{env.appname}}"
 
 - name: Wait for Application's Kubernetes Namespace to Exist
   hosts: localhost
@@ -268,7 +271,7 @@
           - name: tls_verify
             value: "true"
           # # TODO: This is required
-          # - name: image_dev_repo
+          # - name: image_repo
           #   value: "{{ quay_route_url}}/dev/{{env.appname}}"
           - name: cyclonedx_host_url
             value: "https://{{cyclonedx_route_url}}"

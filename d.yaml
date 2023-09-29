@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    latest_image_version: >-
+      quay.apps.cluster-dngn8.dngn8.sandbox536.opentlc.com/dev/a-quarkus-app:main-9f53b030bf355b591067859c5a3418ec580d5d63
+  labels:
+    app.kubernetes.io/instance: a-quarkus-app-dev
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: a-quarkus-app
+    app.kubernetes.io/version: v1.0.0-CR2
+    helm.sh/chart: a-quarkus-app-0.1.0
+    rht-gitops.com/janus-argocd: a-quarkus-app-dev
+  name: a-quarkus-app-dev-1
+  namespace: a-quarkus-app-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: a-quarkus-app-dev
+      app.kubernetes.io/name: a-quarkus-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: a-quarkus-app-dev
+        app.kubernetes.io/name: a-quarkus-app
+    spec:
+      containers:
+        - image: >-
+            quay.apps.cluster-dngn8.dngn8.sandbox536.opentlc.com/dev/a-quarkus-app:main-9f53b030bf355b591067859c5a3418ec580d5d63
+          imagePullPolicy: Always
+          name: a-quarkus-app
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          securityContext: {}
+      imagePullSecrets:
+        - quay-robot-secret
+      securityContext: {}
+      serviceAccountName: a-quarkus-app-dev
+

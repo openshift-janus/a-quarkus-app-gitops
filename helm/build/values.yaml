@@ -22,8 +22,8 @@ build:
   maven:
   ##  env
     maven_builder_image: ""
-  # image:
-  #   repo_url:
+  image:
+    repository:
   #   tag:
 
 # static

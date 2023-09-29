@@ -16,7 +16,8 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: v1.0.0-CR1
 
-imagePullSecrets: []
+imagePullSecrets: 
+  - name: quay-robot-secret
 nameOverride: ""
 fullnameOverride: ""
 

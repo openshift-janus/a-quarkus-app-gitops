@@ -27,7 +27,7 @@ spec:
     value: 'http://nexus-sonatype-nexus-service.nexus.svc:8081/repository/maven-public/'
   - name: sonarqube_host_url
     value: "http://sonarqube.sonarqube.svc:9000"
-  - name: image_dev_repo
+  - name: image_repo
     value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/dev/a-quarkus-app"
   - name: image_test_repo
     value: "quay.apps.cluster-tpklj.tpklj.sandbox2638.opentlc.com/test/a-quarkus-app"

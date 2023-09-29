@@ -7,6 +7,7 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "main-9f53b030bf355b591067859c5a3418ec580d5d63"
+#TODO avoid hard code this secret name here
 imagePullSecrets: 
   - name: quay-robot-secret
 nameOverride: ""
