@@ -299,9 +299,9 @@ spec:
     - name: RELEASE_ENV
       value: test
     - name: GITHUB_TOKEN_SECRET_NAME
-      value: '$(params.source_repo_name)'-github-pat
+      value: '$(params.source_repo_name)-github-pat'
     - name: REPO_FULL_NAME
-      value: '$(params.source_repo_name)'-gitops
+      value: '$(params.source_repo_name)-gitops'
     - name: HEAD
       value: feature-for-$(params.commit_sha)
     - name: BASE
