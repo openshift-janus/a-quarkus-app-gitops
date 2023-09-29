@@ -168,37 +168,37 @@ spec:
     - name: source
       workspace: workspace
 
-  # - name: acs-image-scan
-  #   params:
-  #   - name: rox_central_endpoint
-  #     value: rox-central-endpoint
-  #   - name: rox_api_token
-  #     value: rox-api-token
-  #   - name: image
-  #     value: $(params.image_repo):$(params.image_tag)
-  #   - name: insecure-skip-tls-verify
-  #     value: "true"
-  #   runAfter:
-  #   - build
-  #   taskRef:
-  #     kind: Task
-  #     name: acs-image-scan
+  - name: acs-image-scan
+    params:
+    - name: rox_central_endpoint
+      value: rox-central-endpoint
+    - name: rox_api_token
+      value: rox-api-token
+    - name: image
+      value: $(params.image_repo):$(params.image_tag)
+    - name: insecure-skip-tls-verify
+      value: "true"
+    runAfter:
+    - build
+    taskRef:
+      kind: Task
+      name: acs-image-scan
 
-  # - name: acs-image-check
-  #   params:
-  #   - name: rox_central_endpoint
-  #     value: rox-central-endpoint
-  #   - name: rox_api_token
-  #     value: rox-api-token
-  #   - name: image
-  #     value: $(params.image_repo):$(params.image_tag)
-  #   - name: insecure-skip-tls-verify
-  #     value: "true"
-  #   runAfter:
-  #   - acs-image-scan
-  #   taskRef:
-  #     kind: Task
-  #     name: acs-image-check
+  - name: acs-image-check
+    params:
+    - name: rox_central_endpoint
+      value: rox-central-endpoint
+    - name: rox_api_token
+      value: rox-api-token
+    - name: image
+      value: $(params.image_repo):$(params.image_tag)
+    - name: insecure-skip-tls-verify
+      value: "true"
+    runAfter:
+    - acs-image-scan
+    taskRef:
+      kind: Task
+      name: acs-image-check
 
   - name: generate-sbom
     params:
