@@ -279,7 +279,7 @@ spec:
     - name: repository
       value: $(params.gitops_repo_url)
     - name: target-branch
-      value: feature-for-$(params.commit_sha)
+      value: feature-for-$(params.source_git_revision)
     runAfter:
     - acs-deploy-check
     - verify-tlog-signature
@@ -303,13 +303,13 @@ spec:
     - name: REPO_FULL_NAME
       value: '$(params.source_repo_name)-gitops'
     - name: HEAD
-      value: feature-for-$(params.commit_sha)
+      value: feature-for-$(params.source_git_revision)
     - name: BASE
       value: main
     - name: BODY
-      value: Update prod image for $(params.commit_msg)
+      value: Update image for $(params.commit_message)
     - name: TITLE
-      value: 'Production update: $(params.commit_msg)'
+      value: 'Update: $(params.commit_message)'
     runAfter:
     - create-test-release-branch
     taskRef:
