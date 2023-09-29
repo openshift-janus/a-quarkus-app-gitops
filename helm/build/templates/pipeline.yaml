@@ -84,17 +84,17 @@ spec:
     - name: basic-auth
       workspace: gitcredential
   
-  # - name: verify-source
-  #   runAfter:
-  #   - fetch-source
-  #   taskRef:
-  #     kind: Task
-  #     name: verify-source-code
-  #   workspaces:
-  #   - name: repository
-  #     workspace: workspace
-  #   - name: secrets
-  #     workspace: secrets
+  - name: verify-source
+    runAfter:
+    - fetch-source
+    taskRef:
+      kind: Task
+      name: verify-source-code
+    workspaces:
+    - name: repository
+      workspace: workspace
+    - name: secrets
+      workspace: secrets
 
   - name: package
     params:
@@ -105,8 +105,8 @@ spec:
       - name: GOAL
         value: "package"
     runAfter:
-      # - verify-source
-      - fetch-source
+      - verify-source
+      # - fetch-source
     taskRef:
       kind: Task
       name: maven
@@ -118,22 +118,22 @@ spec:
       - name: maven-local-repo
         workspace: maven-local-repo
   
-  # - name: scan-source
-  #   params:
-  #     - name: SONARQUBE_HOST_URL
-  #       value: $(params.sonarqube_host_url)
-  #     - name: sonarqube_project_key
-  #       value: $(params.sonarqube_project_key)
-  #     - name: sonarqubeProjectSecret
-  #       value: $(params.sonarqube_project_secret)
-  #   runAfter:
-  #     - package
-  #   taskRef:
-  #     kind: Task
-  #     name: scan-code
-  #   workspaces:
-  #     - name: repository
-  #       workspace: workspace
+  - name: scan-source
+    params:
+      - name: SONARQUBE_HOST_URL
+        value: $(params.sonarqube_host_url)
+      - name: sonarqube_project_key
+        value: $(params.sonarqube_project_key)
+      - name: sonarqubeProjectSecret
+        value: $(params.sonarqube_project_secret)
+    runAfter:
+      - package
+    taskRef:
+      kind: Task
+      name: scan-code
+    workspaces:
+      - name: repository
+        workspace: workspace
 
   # - name: build
   #   params:
@@ -213,25 +213,19 @@ spec:
     - name: repository
       workspace: workspace
 
-  - name: update-dev-release-image-tag
+  - name: verify-tlog-signature
     params:
-    - name: image_tag
-      value: $(params.image_tag)
-    - name: configuration_file
-      value: $(params.release_dev_helm_dir)/$(params.release_dev_values_file)
-    - name: repository
-      value: $(params.gitops_repo_url)
-    - name: target-branch
-      value: $(params.gitops_target_branch)
+      - name: registrySecret
+        value: quay-robot-secret
+      - name: cosignSecret
+        value: cosign-secret
+      - name: image
+        value: $(params.image_repo):$(params.image_tag)
     runAfter:
-    # - acs-image-check
-    - acs-deploy-check
+    - build
     taskRef:
       kind: Task
-      name: update-release-image-tag
-    workspaces:
-    - name: basic-auth
-      workspace: gitcredential
+      name: rekor-verify
 
   - name: acs-deploy-check
     params:
@@ -252,7 +246,9 @@ spec:
       - name: releaseHelmValuesFilePath
         value: '$(params.release_dev_values_file)'
     runAfter:
-      - generate-sbom
+    - acs-image-check
+    - generate-sbom
+    - verify-tlog-signature
     taskRef:
       kind: Task
       name: acs-deploy-check
@@ -260,19 +256,24 @@ spec:
     - name: basic-auth
       workspace: gitcredential
 
-  - name: verify-tlog-signature
+  - name: update-dev-release-image-tag
     params:
-      - name: registrySecret
-        value: quay-robot-secret
-      - name: cosignSecret
-        value: cosign-secret
-      - name: image
-        value: $(params.image_repo):$(params.image_tag)
+    - name: image_tag
+      value: $(params.image_tag)
+    - name: configuration_file
+      value: $(params.release_dev_helm_dir)/$(params.release_dev_values_file)
+    - name: repository
+      value: $(params.gitops_repo_url)
+    - name: target-branch
+      value: $(params.gitops_target_branch)
     runAfter:
-    - build
+    - acs-deploy-check
     taskRef:
       kind: Task
-      name: rekor-verify
+      name: update-release-image-tag
+    workspaces:
+    - name: basic-auth
+      workspace: gitcredential
 
   - name: release-create-test-release-pr-branch
     params:
