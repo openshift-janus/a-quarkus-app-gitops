@@ -275,7 +275,7 @@ spec:
     - name: basic-auth
       workspace: gitcredential
 
-  - name: release-create-test-release-pr-branch
+  - name: create-test-release-pr-branch
     params:
     - name: image_tag
       value: $(params.image_tag)
@@ -289,7 +289,6 @@ spec:
       value: feature-for-$(params.source_git_revision)
     runAfter:
     - acs-deploy-check
-    - verify-tlog-signature
     taskRef:
       kind: Task
       name: create-pr-release-branch
