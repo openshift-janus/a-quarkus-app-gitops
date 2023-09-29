@@ -23,7 +23,7 @@ build:
   ##  env
     maven_builder_image: ""
   image:
-    repository:
+    repository: ""
   #   tag:
 
 # static
