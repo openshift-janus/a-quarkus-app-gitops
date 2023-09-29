@@ -54,7 +54,7 @@ spec:
 
       # Set to the short commit value passed as parameter.
       # Notice the enclosing " to keep it as a string in the resulting YAML.
-      IMAGE=\"$(params.image_tag)\"
+      IMAGE_TAG=\"$(params.image_tag)\"
 
       sed -i 's/^  tag: .*/  tag: ${IMAGE_TAG}/' $(params.configuration_filepath)
 
