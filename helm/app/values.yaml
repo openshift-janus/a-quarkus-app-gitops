@@ -9,7 +9,7 @@
 #     name: default
 replicaCount: 1
 image:
-  repository: ""
+  repository: "quay.io/janus_demo/a-quarkus-app-test"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
